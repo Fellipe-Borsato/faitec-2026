@@ -75,24 +75,58 @@ class zebra:
         return chave
 
     def geraDica(self,tipo,dados1,dados2):
-
-        if tipo.upper() == 'POSICIONAL':
-            extraichave = (self.chave[dados2[0]],self.chave[5*dados2[0]+dados2[1]])
-            print('---')
-            print(extraichave)
-            print('---')
-            dica = f'Na posição {dados2[1]} fica quem {self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])+1))}'.upper().replace('QUEM A', 'A').replace('É,O','O').replace('QUEM O', 'O')
-        else:
-            dica = f'{self.buscaValor((extraichave[0],0)).replace('É,','')} {self.buscaValor((extraichave[0],extraichave[1]))}'
-        extraichave = (self.chave[dados2[0]-1],self.chave[5*dados2[0]+dados2[1]])
+        tipo = tipo.upper()
+        extraichave = (self.chave[dados1[0]-1],self.chave[5*dados1[0]-1+dados1[1]],self.chave[dados2[0]-1],self.chave[5*dados2[0]-1+dados2[1]])
+        def corrigeGramatica(texto):
+            texto = texto.upper()
+            texto = texto.replace('QUEM A', 'A')
+            texto = texto.replace('É,O','O')
+            texto = texto.replace('QUEM O', 'O')
+            texto = texto.replace('DE O ','DO ')
+            return texto
+        dica = 'Algo errado aconteceu'
+        if tipo == 'POS':
+            dica = f'Na posição {dados2[1]} fica quem {self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'MESMAPOS':
+            dica = f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
+            dica += ' QUEM '
+            dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'ESQ':
+            dica = 'QUEM '
+            dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
+            dica += ' FICA A ESQUERDA DE QUEM '
+            dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'LADO':
+            dica = 'QUEM '
+            dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
+            dica += ' FICA AO LADO DE QUEM '
+            dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        return corrigeGramatica(dica)
         
-        return dica
-        
 
-        
-
-#print(zebra().pegaResposta())
+listadicas = [
+    ('MESMAPOS',(2,3),(1,3)),
+    ('MESMAPOS',(2,5),(5,5)),
+    ('MESMAPOS',(2,2),(3,2)),
+    ('ESQ', (1,4),(1,5)),
+    ('MESMAPOS', (1,4), (3,4)),
+    ('MESMAPOS', (4,3), (5,3)),
+    ('MESMAPOS', (1,1), (4,1)),
+    ('POS',(0,0),(3,3)),
+    ('POS',(0,0),(2,1)),
+    ('LADO',(4,2),(5,1)),
+    ('LADO',(5,2),(4,1)),
+    ('MESMAPOS',(4,5),(3,5)),
+    ('MESMAPOS',(2,4),(4,4)),
+    ('LADO',(2,1),(1,2)),
+    ('LADO',(4,2),(3,1)),
+]        
+chavealeatoria = zebra().geraChave()
+for dica in listadicas:
+    print(zebra(chavealeatoria).geraDica(dica[0],dica[1],dica[2]))
+print(chavealeatoria)
+#print(zebra(chavealeatoria).pegaResposta())
+#print(zebra().geraDica('pOS',(),(3,3)))
 #chavealeatoria = zebra().geraChave()
 #print(chavealeatoria)
 #print(zebra(chavealeatoria).pegaResposta())
-#print(zebra(chavealeatoria).geraDica('posicional',(0,3),(3,3)))
