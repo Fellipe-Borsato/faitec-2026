@@ -2,141 +2,96 @@ import usb.core
 import usb.util
 import libusb_package
 class thermal:
-
     def __init__(self):
-        self.backend = libusb_package.get_libusb1_backend()
+        self.maxchars = 32
+        self.backend = libusb_package.get_libusb1_backend() #Faz a ponte entre o python e o Usb do Windows
         self.device = usb.core.find(
-            idVendor=0x0416,
-            idProduct=0x5011,
+            idVendor=0x0416, #Vendor da impressora termica, conforme consta na documentação
+            idProduct=0x5011, #Id da impressora termica, conforme consta na documentação
             backend=self.backend
         )
         if self.device is None:
-            raise Exception("Printer not found!")
-        self.device.write(0x01, b"\x1b\x40")
-        self.device.set_configuration()
-        # CP860 / code page 3
-        self.device.write(
-            0x01,
-            b"\x1b\x74\x03"
-        )
-
-    def print_text(self, text, max_chars=32):
-        """
-        Print text with automatic word wrapping.
-
-        Words are never split unless a single word itself is
-        longer than max_chars.
-        """
-        # Make sure we're working with a string
-        text = str(text)
-        # Preserve manually inserted line breaks
-        paragraphs = text.split('\n')
+            return
+            raise Exception("Printer not found!") #Dá erro se não encontrar impressora
+        self.device.set_configuration() #Inicializa a funcionalidade USB
+        self.device.write(0x01, b"\x1b\x40") #Inicializa / reseta a impressora (P.19 do manual)
+        self.device.write(0x01, b"\x1b\x74\x03") #Seleciona a língua de impressao (Pra aparecer ã, é, etc) (P.27 do manual, consta na documentação)
+    def __bool__(self):
+        return self.device is not None
+    
+    def print_text(self, text=''):
+        text = str(text)+'\n'
+        paragraphs = text.split('\n') #Se o texto enviado já tiver quebra de linha, respeita, então separa em uma lista
         output_lines = []
         for paragraph in paragraphs:
-            # Preserve completely empty lines
-            if not paragraph.strip():
-                output_lines.append('')
+            if not paragraph.strip(): #Caso tenha uma linha vazia
+                output_lines.append('') #Coloca pra imprimir
                 continue
-            words = paragraph.split()
+            words = paragraph.split() #Separa por palavras
             current_line = ''
             for word in words:
-                # Normal case: word fits on the current line
-                if len(current_line) + len(word) + 1 <= max_chars:
+                if len(current_line) + len(word) + 1 <= self.maxchars: #O tamanho da linha atual mais a palavra + 1 é menor do que o número máximo?
                     if current_line:
-                        current_line += ' ' + word
+                        current_line += ' ' + word #Adiciona a palavra inteira na linha a ser impressa
                     else:
-                        current_line = word
+                        current_line = word #Imprime só a palavra
                 else:
-                    # Current line is full
-                    if current_line:
-                        output_lines.append(current_line)
-                    # If the word itself is too long, split it
-                    # because there is no space where we can break it.
-                    while len(word) > max_chars:
-                        output_lines.append(word[:max_chars])
-                        word = word[max_chars:]
+                    if current_line: #Se tem coisa a ser impressa
+                        output_lines.append(current_line)  #Coloca pra imprimir
+                    while len(word) > self.maxchars: #Se a palavra for muito grande, mais que 32 caracteres
+                        output_lines.append(word[:self.maxchars]) #Coloca o que cabe
+                        word = word[self.maxchars:] #Tira a parte que coube e repete
                     current_line = word
             if current_line:
-                output_lines.append(current_line)
-        # Add newline between every printed line
-        output = '\n'.join(output_lines)
-        self.device.write(
-            0x01,
-            output.encode('cp860')
-        )
+                output_lines.append(current_line) #Poe pra imprimir
+        output = '\n'.join(output_lines) #Junta a lista com quebra de linha
+        self.device.write(0x01,output.encode('cp860')) #Manda pra impressora
 
     def print_qr(self, data):
         data = data.encode("utf-8")
+        #Configuração dum tanto de coisa pra imprimir QR code
+        self.device.write(0x01, b"\x1d\x28\x6b\x04\x00\x31\x41\x32\x00")
 
-        # QR Model 2
-        self.device.write(
-            0x01,
-            b"\x1d\x28\x6b\x04\x00\x31\x41\x32\x00"
-        )
+        # Tamanho
+        self.device.write(0x01, b"\x1d\x28\x6b\x03\x00\x31\x43\x05")
 
-        # Size
-        self.device.write(
-            0x01,
-            b"\x1d\x28\x6b\x03\x00\x31\x43\x05"
-        )
+        # Correção de erro (Coisa de qr code) = L
+        self.device.write(0x01, b"\x1d\x28\x6b\x03\x00\x31\x45\x30")
 
-        # Error correction = L
-        self.device.write(
-            0x01,
-            b"\x1d\x28\x6b\x03\x00\x31\x45\x30"
-        )
-
-        # Store data
+        # Guarda os dados
         length = len(data) + 3
         pL = length & 0xFF
         pH = (length >> 8) & 0xFF
 
-        command = (
-            b"\x1d\x28\x6b"
-            + bytes([pL, pH])
-            + b"\x31\x50\x30"
-            + data
-        )
+        command = (b"\x1d\x28\x6b" + bytes([pL, pH]) + b"\x31\x50\x30" + data) #Prepara tudo pra imprimir
 
-        self.device.write(
-            0x01,
-            command
-        )
-
-        # Print
-        self.device.write(
-            0x01,
-            b"\x1d\x28\x6b\x03\x00\x31\x51\x30"
-        )
+        self.device.write(0x01, command) #Manda pra impressora
+        self.device.write(0x01, b"\x1d\x28\x6b\x03\x00\x31\x51\x30") #Imprime
 
     def underline(self, toggle=False):
         if toggle:
-            self.device.write(
-                0x01,
-                b"\x1b\x2d\x32"
-            )
+            self.device.write(0x01, b"\x1b\x2d\x32") #Sublinha (P.16/17 do manual)
         else:
-            self.device.write(
-                0x01,
-                b"\x1b\x2d\x00"
-            )
+            self.device.write(0x01, b"\x1b\x2d\x00")
 
     def center(self, toggle=False):
         if toggle:
-            self.device.write(
-                0x01,
-                b"\x1b\x61\x01"
-            )
+            self.device.write(0x01, b"\x1b\x61\x01") #Centraliza (p.25 do manual)
         else:
-            self.device.write(
-                0x01,
-                b"\x1b\x61\x00"
-            )
-            
+            self.device.write(0x01, b"\x1b\x61\x00")
+
+    def fonte(self, toggle=False):
+        if toggle:
+            self.device.write(0x01, b"\x1b\x21\x01") #Fonte B (p.8/9 do manual)
+            self.maxchars = 42
+        else:
+            self.device.write(0x01, b"\x1b\x21\x00") #Fonte A
+            self.maxchars = 32
+
     def cut(self):
-        self.print_text("\n\n\n\n\n")
+        self.print_text("\n\n\n\n\n") #Poe quebra de linha no final pra poder rasgar o papel
   
-    def __del__(self):
+    def __del__(self): #Quando a classe for fechada, libera a impressora
         try:
             if self.device is not None:
                 usb.util.dispose_resources(self.device)

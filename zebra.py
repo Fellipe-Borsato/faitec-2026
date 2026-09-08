@@ -5,7 +5,8 @@ class zebra:
     def __init__(self,chave='12345'*6):
         self.path = r'./Categorias/'
         self.chave=str(chave)
-
+    def chave(self):
+        return self.chave
     def buscaCategorias(self,mostraValores=True):
         categorias = []
         for file in os.listdir(self.path):
@@ -96,37 +97,36 @@ class zebra:
             dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
             dica += ' FICA A ESQUERDA DE QUEM '
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'DIR':
+            dica = 'QUEM '
+            dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
+            dica += ' FICA A DIREITA DE QUEM '
+            dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
         elif tipo == 'LADO':
             dica = 'QUEM '
             dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
             dica += ' FICA AO LADO DE QUEM '
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
         return corrigeGramatica(dica)
-        
-
-listadicas = [
-    ('MESMAPOS',(2,3),(1,3)),
-    ('MESMAPOS',(2,5),(5,5)),
-    ('MESMAPOS',(2,2),(3,2)),
-    ('ESQ', (1,4),(1,5)),
-    ('MESMAPOS', (1,4), (3,4)),
-    ('MESMAPOS', (4,3), (5,3)),
-    ('MESMAPOS', (1,1), (4,1)),
-    ('POS',(0,0),(3,3)),
-    ('POS',(0,0),(2,1)),
-    ('LADO',(4,2),(5,1)),
-    ('LADO',(5,2),(4,1)),
-    ('MESMAPOS',(4,5),(3,5)),
-    ('MESMAPOS',(2,4),(4,4)),
-    ('LADO',(2,1),(1,2)),
-    ('LADO',(4,2),(3,1)),
-]        
-chavealeatoria = zebra().geraChave()
-for dica in listadicas:
-    print(zebra(chavealeatoria).geraDica(dica[0],dica[1],dica[2]))
-print(chavealeatoria)
-#print(zebra(chavealeatoria).pegaResposta())
-#print(zebra().geraDica('pOS',(),(3,3)))
-#chavealeatoria = zebra().geraChave()
-#print(chavealeatoria)
-#print(zebra(chavealeatoria).pegaResposta())
+    def geraDicas(self):
+        regradicas = [
+            ('MESMAPOS',(2,3),(1,3)),
+            ('MESMAPOS',(2,5),(5,5)),
+            ('MESMAPOS',(2,2),(3,2)),
+            ('ESQ', (1,4),(1,5)),
+            ('MESMAPOS', (1,4), (3,4)),
+            ('MESMAPOS', (4,3), (5,3)),
+            ('MESMAPOS', (1,1), (4,1)),
+            ('POS',(0,0),(3,3)),
+            ('POS',(0,0),(2,1)),
+            ('LADO',(4,2),(5,1)),
+            ('LADO',(5,2),(4,1)),
+            ('MESMAPOS',(4,5),(3,5)),
+            ('MESMAPOS',(2,4),(4,4)),
+            ('LADO',(2,1),(1,2)),
+            ('LADO',(4,2),(3,1)),
+        ]
+        dicas = []
+        for regra in regradicas:
+            dicas.append(self.geraDica(regra[0],regra[1],regra[2]))
+        return dicas
