@@ -3,7 +3,7 @@ from thermal import thermal
 
 def main():
     impressora = thermal()
-    chave = 2314543152415235312453412243513# zebra().geraChave()
+    #chave = 12345123451234512345123451234599991# zebra().geraChave()
     chave = zebra().geraChave()
     puzzle = zebra(chave)
     dicas = puzzle.geraDicas()
@@ -12,6 +12,7 @@ def main():
       for dica in dicas:
         impressora.print_text(dica)
       impressora.print_text()
+      impressora.center(True)
       impressora.print_text(puzzle.chave)
       impressora.cut()
     else:

@@ -1,10 +1,13 @@
 import random
 import os
+import json
 
 class zebra:
-    def __init__(self,chave='12345'*6+'1'):
+    def __init__(self,chave='12345'*6+'99991'):
         self.path = r'./Categorias/'
         self.chave=str(chave)
+        if len(str(chave)) != 35:
+            raise Exception ("Chave inválida")
 
     def chave(self):
         return self.chave
@@ -17,6 +20,8 @@ class zebra:
                     categorias.append(file.split('.')[1])
                 else:
                     categorias.append(file.split('.')[0])
+        if not len(categorias):
+            raise Exception ('Categorias não encontradas')
         return categorias
 
     def buscaCategoria(self,categoria):
@@ -24,7 +29,9 @@ class zebra:
         for file in os.listdir(self.path):
             if file[0] in categoria:
                 nome = file[2:].replace('.txt','')
-        return nome
+                return nome
+        else:
+            raise Exception (f'Categoria {categoria} não encontrada')
 
     def buscaValores(self,categoria,mostraValores=True,mostraVerbo=False):
         categoria = str(categoria)
@@ -40,6 +47,8 @@ class zebra:
                         valores.append(str(conteudo.index(linha)))
         if not mostraVerbo:
             valores.pop(0)
+        if not len(valores):
+            raise Exception ('Valores não encontrados')
         return valores
     
     def buscaValor(self,dados):
@@ -50,7 +59,7 @@ class zebra:
                 conteudo = fileopen.readlines()
                 return conteudo[posicao].strip()
         else:
-            return False
+            raise Exception (f'Valor {dados[1]} da categoria {dados[0]} não encontrádo')
     
     def pegaResposta(self):
         respostas = []
@@ -61,7 +70,9 @@ class zebra:
                 valorCategoria = self.buscaValor((self.chave[categoria],self.chave[5*categoria+valor]))
                 resposta[nomeCategoria] = valorCategoria
             respostas.append(resposta)
-        return respostas
+        if len(respostas) != 5:
+            raise Exception ('Resposta incompleta gerada')
+        return json.dumps(respostas)
     
     def geraChave(self):
         chave = ''
@@ -74,7 +85,12 @@ class zebra:
             for _ in range(5):
                 escolha = random.randrange(len(valores))
                 chave+= valores.pop(escolha)
+        random.seed()
+        for _ in range(4):
+            chave+= str(random.randint(1,9))
         chave += str(random.randint(1,3))
+        if len(chave) != 5*6+1+4:
+            raise Exception (f'Chave gerada incorretamente (chave {chave})')
         return chave
 
     def geraDica(self,tipo,dados1,dados2):
@@ -138,6 +154,7 @@ class zebra:
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
             dica += ' ESTÁ EM UMA DAS PONTAS'
         return corrigeGramatica(dica)
+    
     def geraDicas(self):
         regras = []
         regradicas = [
@@ -202,6 +219,7 @@ class zebra:
         ]
         regras.append(regradicas)
         regradicas = regras[int(self.chave[-1])-1]
+        random.seed(self.chave[-5:-1])
         random.shuffle(regradicas)
         dicas = []
         for regra in regradicas:

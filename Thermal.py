@@ -47,7 +47,7 @@ class thermal:
         output = '\n'.join(output_lines) #Junta a lista com quebra de linha
         self.device.write(0x01,output.encode('cp860')) #Manda pra impressora
 
-    def print_qr(self, data):
+    def print_qr2(self, data):
         data = data.encode("utf-8")
         #Configuração dum tanto de coisa pra imprimir QR code
         self.device.write(0x01, b"\x1d\x28\x6b\x04\x00\x31\x41\x32\x00")
@@ -67,6 +67,49 @@ class thermal:
 
         self.device.write(0x01, command) #Manda pra impressora
         self.device.write(0x01, b"\x1d\x28\x6b\x03\x00\x31\x51\x30") #Imprime
+        
+    def print_qr(self,data):
+        data = data.encode("utf-8")
+        self.device.write(0x01, b"\x1b\x61\x01")
+        # QR Model 2
+        self.device.write(
+            0x01,
+            b"\x1d\x28\x6b\x04\x00\x31\x41\x32\x00"
+        )
+
+        # Size
+        self.device.write(
+            0x01,
+            b"\x1d\x28\x6b\x03\x00\x31\x43\x05"
+        )
+
+        # Error correction = L
+        self.device.write(
+            0x01,
+            b"\x1d\x28\x6b\x03\x00\x31\x45\x30"
+        )
+
+        # Store data
+        length = len(data) + 3
+        pL = length & 0xFF
+        pH = (length >> 8) & 0xFF
+
+        command = (
+            b"\x1d\x28\x6b"
+            + bytes([pL, pH])
+            + b"\x31\x50\x30"
+            + data
+        )
+
+        self.device.write(0x01, command)
+
+        # Print
+        self.device.write(
+            0x01,
+            b"\x1d\x28\x6b\x03\x00\x31\x51\x30"
+        )
+
+        self.device.write(0x01, b"\x1b\x61\x00")
 
     def underline(self, toggle=False):
         if toggle:
