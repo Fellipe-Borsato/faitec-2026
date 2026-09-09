@@ -1,11 +1,12 @@
 import random
 import os
+import json
 
 class zebra:
-    def __init__(self,chave='12345'*6+'1'):
+    def __init__(self,chave='12345'*6+'99991'):
         self.path = r'./Categorias/'
         self.chave=str(chave)
-        if len(chave) != 31:
+        if len(str(chave)) != 35:
             raise Exception ("Chave inválida")
 
     def chave(self):
@@ -71,7 +72,7 @@ class zebra:
             respostas.append(resposta)
         if len(respostas) != 5:
             raise Exception ('Resposta incompleta gerada')
-        return respostas
+        return json.dumps(respostas)
     
     def geraChave(self):
         chave = ''
@@ -84,8 +85,11 @@ class zebra:
             for _ in range(5):
                 escolha = random.randrange(len(valores))
                 chave+= valores.pop(escolha)
+        random.seed()
+        for _ in range(4):
+            chave+= str(random.randint(1,9))
         chave += str(random.randint(1,3))
-        if len(chave) != 5*6+1:
+        if len(chave) != 5*6+1+4:
             raise Exception (f'Chave gerada incorretamente (chave {chave})')
         return chave
 
@@ -150,6 +154,7 @@ class zebra:
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
             dica += ' ESTÁ EM UMA DAS PONTAS'
         return corrigeGramatica(dica)
+    
     def geraDicas(self):
         regras = []
         regradicas = [
@@ -214,6 +219,7 @@ class zebra:
         ]
         regras.append(regradicas)
         regradicas = regras[int(self.chave[-1])-1]
+        random.seed(self.chave[-5:-1])
         random.shuffle(regradicas)
         dicas = []
         for regra in regradicas:
