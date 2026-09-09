@@ -3,8 +3,8 @@ from thermal import thermal
 
 def main():
     impressora = thermal()
-    print(impressora)
-    chave = 231454315241523531245341224351# zebra().geraChave()
+    chave = 2314543152415235312453412243512# zebra().geraChave()
+    #chave = zebra().geraChave()
     puzzle = zebra(chave)
     dicas = puzzle.geraDicas()
     if impressora:

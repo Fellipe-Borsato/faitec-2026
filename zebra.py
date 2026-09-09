@@ -2,7 +2,7 @@ import random
 import os
 
 class zebra:
-    def __init__(self,chave='12345'*6):
+    def __init__(self,chave='12345'*6+'1'):
         self.path = r'./Categorias/'
         self.chave=str(chave)
     def chave(self):
@@ -73,6 +73,7 @@ class zebra:
             for k in range(5):
                 escolha = random.randrange(len(valores))
                 chave+= valores.pop(escolha)
+        chave += str(random.randint(1,2))
         return chave
 
     def geraDica(self,tipo,dados1,dados2):
@@ -89,26 +90,54 @@ class zebra:
         if tipo == 'POS':
             dica = f'Na posição {dados2[1]} fica quem {self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
         elif tipo == 'MESMAPOS':
+            if dados1[1] != dados2[1]:
+                raise Exception(f'Dica inválida: {dados1} não fica na mesma posição de {dados2}')
             dica = f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
             dica += ' QUEM '
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
         elif tipo == 'ESQ':
+            if dados2[1] - dados1[1] != 1:
+                raise Exception(f'Dica inválida: {dados1} não fica exatamente a esquerda de {dados2}')
             dica = 'QUEM '
             dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
             dica += ' FICA A ESQUERDA DE QUEM '
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'ESQ+':
+            if dados2[1] - dados1[1] < 1:
+                raise Exception(f'Dica inválida: {dados1} não a esquerda de {dados2}')
+            dica = 'QUEM '
+            dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
+            dica += ' FICA A ALGUM LUGAR PARA A ESQUERDA DE QUEM '
+            dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
         elif tipo == 'DIR':
+            if dados1[1] - dados2[1] != 1:
+                raise Exception(f'Dica inválida: {dados1} não fica exatamente a direita de {dados2}')
             dica = 'QUEM '
             dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
             dica += ' FICA A DIREITA DE QUEM '
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'DIR+':
+            if dados1[1] - dados2[1] < 1:
+                raise Exception(f'Dica inválida: {dados1} não fica exatamente a direita de {dados2}')
+            dica = 'QUEM '
+            dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
+            dica += ' FICA A ALGUM LUGAR PARA A DIREITA DE QUEM '
+            dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
         elif tipo == 'LADO':
+            if abs(dados1[1] - dados2[1]) != 1:
+                raise Exception(f'Dica inválida: {dados1} não fica ao lado de {dados2}')
             dica = 'QUEM '
             dica += f'{self.buscaValor((int(extraichave[0]),0))} {self.buscaValor((int(extraichave[0]),int(extraichave[1])))}'
             dica += ' FICA AO LADO DE QUEM '
             dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'PONTA':
+            if dados2[1] != 5 and dados2[1] != 1:
+                raise Exception(f'Dica inválida: {dados2} não fica na ponta')
+            dica = f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+            dica += ' ESTÁ EM UMA DAS PONTAS'
         return corrigeGramatica(dica)
     def geraDicas(self):
+        regras = []
         regradicas = [
             ('MESMAPOS',(2,3),(1,3)),
             ('MESMAPOS',(2,5),(5,5)),
@@ -126,6 +155,31 @@ class zebra:
             ('LADO',(2,1),(1,2)),
             ('LADO',(4,2),(3,1)),
         ]
+        regras.append(regradicas)
+        regradicas = [
+            ('POS',(0,0),(2,5)),
+            ('DIR',(2,5),(2,4)),
+            ('PONTA',(0,0),(2,1)),
+            ('POS',(0,0),(3,4)),
+            ('MESMAPOS',(2,4),(5,4)),
+            ('MESMAPOS',(2,4),(1,4)),
+            ('ESQ+',(1,4),(5,5)),
+            ('LADO',(1,4),(2,3)),
+            ('DIR',(4,2),(1,1)),
+            ('LADO',(4,4),(5,5)),
+            ('MESMAPOS',(4,2),(5,2)),
+            ('MESMAPOS',(1,3),(5,3)),
+            ('ESQ+',(1,2),(5,3)),
+            ('DIR+',(4,5),(1,3)),
+            ('LADO',(1,3),(3,4)),
+            ('LADO',(3,3),(4,4)),
+            ('ESQ',(3,4),(3,5)),
+            ('ESQ+',(3,2),(3,5)),
+            ('DIR',(3,2),(3,1))
+        ]
+        regras.append(regradicas)
+        regradicas = regras[int(self.chave[-1])-1]
+        random.shuffle(regradicas)
         dicas = []
         for regra in regradicas:
             dicas.append(self.geraDica(regra[0],regra[1],regra[2]))
