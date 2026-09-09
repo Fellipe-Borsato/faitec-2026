@@ -67,12 +67,12 @@ class zebra:
             resposta={}
             for categoria in range(5):
                 nomeCategoria = self.buscaCategoria(self.chave[categoria])
-                valorCategoria = self.buscaValor((self.chave[categoria],self.chave[5*categoria+valor]))
+                valorCategoria = self.buscaValor((self.chave[categoria],int(self.chave[5*(categoria+1)+valor])))
                 resposta[nomeCategoria] = valorCategoria
             respostas.append(resposta)
         if len(respostas) != 5:
             raise Exception ('Resposta incompleta gerada')
-        return json.dumps(respostas)
+        return str(json.dumps(respostas)).encode('utf-8')
     
     def geraChave(self):
         chave = ''
