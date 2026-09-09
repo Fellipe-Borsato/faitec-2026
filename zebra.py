@@ -73,7 +73,7 @@ class zebra:
             for k in range(5):
                 escolha = random.randrange(len(valores))
                 chave+= valores.pop(escolha)
-        chave += str(random.randint(1,2))
+        chave += str(random.randint(1,3))
         return chave
 
     def geraDica(self,tipo,dados1,dados2):
@@ -176,6 +176,27 @@ class zebra:
             ('ESQ',(3,4),(3,5)),
             ('ESQ+',(3,2),(3,5)),
             ('DIR',(3,2),(3,1))
+        ]
+        regras.append(regradicas)
+        regradicas = [
+            ('MESMAPOS',(2,2),(4,2)),
+            ('MESMAPOS',(4,2),(3,2)),
+            ('POS',(0,0),(1,3)),
+            ('MESMAPOS',(2,4),(4,4)),
+            ('MESMAPOS',(2,1),(1,1)),
+            ('ESQ',(2,1),(3,2)),
+            ('DIR',(5,4),(3,3)),
+            ('MESMAPOS',(2,3),(5,3)),
+            ('LADO',(3,4),(1,5)),
+            ('MESMAPOS',(5,1),(4,1)),
+            ('MESMAPOS',(2,5),(4,5)),
+            ('DIR',(2,5),(5,4)),
+            ('MESMAPOS',(1,2),(5,2)),
+            ('LADO',(4,5),(1,4)),
+            ('PONTA',(0,0),(3,5)),
+            ('MESMAPOS',(1,3),(4,3)),
+            ('LADO',(3,5),(3,4)),
+            ('MESMAPOS',(5,2),(4,2))
         ]
         regras.append(regradicas)
         regradicas = regras[int(self.chave[-1])-1]
