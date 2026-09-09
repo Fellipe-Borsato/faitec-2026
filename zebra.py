@@ -133,7 +133,8 @@ class zebra:
         elif tipo == 'PONTA':
             if dados2[1] != 5 and dados2[1] != 1:
                 raise Exception(f'Dica inválida: {dados2} não fica na ponta')
-            dica = f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+            dica = 'QUEM '
+            dica += f'{self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
             dica += ' ESTÁ EM UMA DAS PONTAS'
         return corrigeGramatica(dica)
     def geraDicas(self):
