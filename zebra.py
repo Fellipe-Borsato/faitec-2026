@@ -5,12 +5,14 @@ class zebra:
     def __init__(self,chave='12345'*6+'1'):
         self.path = r'./Categorias/'
         self.chave=str(chave)
+
     def chave(self):
         return self.chave
-    def buscaCategorias(self,mostraValores=True):
+    
+    def buscaCategorias(self,mostraValores=True,mostraTodas=False):
         categorias = []
         for file in os.listdir(self.path):
-            if file[0] in self.chave:
+            if file[0] in self.chave[0:5] or mostraTodas:
                 if mostraValores:
                     categorias.append(file.split('.')[1])
                 else:
@@ -63,14 +65,13 @@ class zebra:
     
     def geraChave(self):
         chave = ''
-        categorias = self.buscaCategorias(False)
-        escolhas = []
+        categorias = self.buscaCategorias(False,True)
         for _ in range(5):
             escolha = random.randrange(len(categorias))
             chave += categorias.pop(escolha)
-        for _ in range(5):
-            valores = self.buscaValores(chave[_],False)
-            for k in range(5):
+        for c in range(5):
+            valores = self.buscaValores(chave[c],False)
+            for _ in range(5):
                 escolha = random.randrange(len(valores))
                 chave+= valores.pop(escolha)
         chave += str(random.randint(1,3))
@@ -81,9 +82,9 @@ class zebra:
         extraichave = (self.chave[dados1[0]-1],self.chave[5*dados1[0]-1+dados1[1]],self.chave[dados2[0]-1],self.chave[5*dados2[0]-1+dados2[1]])
         def corrigeGramatica(texto):
             texto = texto.upper()
-            texto = texto.replace('QUEM A', 'A')
-            texto = texto.replace('É,O','O')
-            texto = texto.replace('QUEM O', 'O')
+            texto = texto.replace('QUEM A ', 'A ')
+            texto = texto.replace('É,O ','O ')
+            texto = texto.replace('QUEM O ', 'O ')
             texto = texto.replace('DE O ','DO ')
             return texto
         dica = 'Algo errado aconteceu'

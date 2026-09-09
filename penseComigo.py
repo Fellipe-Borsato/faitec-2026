@@ -4,7 +4,7 @@ from thermal import thermal
 def main():
     impressora = thermal()
     chave = 2314543152415235312453412243513# zebra().geraChave()
-    #chave = zebra().geraChave()
+    chave = zebra().geraChave()
     puzzle = zebra(chave)
     dicas = puzzle.geraDicas()
     if impressora:
@@ -19,6 +19,7 @@ def main():
         print(dica)
       print()
       print(puzzle.chave)
+      print(puzzle.pegaResposta())
        
 
 if __name__ == "__main__":
