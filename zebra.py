@@ -5,13 +5,18 @@ import json
 class zebra:
     def __init__(self,chave='12345'*6+'99991'):
         self.path = r'./Categorias/'
-        self.chave=str(chave)
-        if len(str(chave)) != 35:
+        self.chave=str(chave).replace(':','')
+        if len(str(self.chave)) != 35:
             raise Exception ("Chave inválida")
+    def chaveFormatada(self):
+        mac = []
+        for i in range(0,len(self.chave),5):
+            mac.append(f'{int(self.chave[i:i+5])}')
+        mac = ':'.join(mac)
+        return mac
 
-    def chave(self):
-        return self.chave
-    
+    def macChave(self,chaveMac):
+        pass
     def buscaCategorias(self,mostraValores=True,mostraTodas=False):
         categorias = []
         for file in os.listdir(self.path):
@@ -72,7 +77,7 @@ class zebra:
             respostas.append(resposta)
         if len(respostas) != 5:
             raise Exception ('Resposta incompleta gerada')
-        return str(json.dumps(respostas)).encode('utf-8')
+        return respostas
     
     def geraChave(self):
         chave = ''
