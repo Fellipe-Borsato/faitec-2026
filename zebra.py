@@ -120,10 +120,10 @@ class zebra:
         extraichave = (self.chave[dados1[0]-1],self.chave[5*dados1[0]-1+dados1[1]],self.chave[dados2[0]-1],self.chave[5*dados2[0]-1+dados2[1]])
         def corrigeGramatica(texto):
             texto = texto.upper()
-            texto = texto.replace('QUEM A ', 'A ')
-            texto = texto.replace('É,O ','O ')
-            texto = texto.replace('QUEM O ', 'O ')
-            texto = texto.replace('DE O ','DO ')
+            texto = texto.replace(' QUEM A ', ' A ')
+            texto = texto.replace(' É,O ',' O ')
+            texto = texto.replace(' QUEM O ', ' O ')
+            texto = texto.replace(' DE O ',' DO ')
             return texto
         dica = 'Algo errado aconteceu'
         if tipo == 'POS':
