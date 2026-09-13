@@ -26,7 +26,7 @@ janela = pygame.display.set_mode(
     pygame.NOFRAME
 )
 
-pygame.display.set_caption("Einstein - O Enigma")
+pygame.display.set_caption("Pense comigo")
 
 clock = pygame.time.Clock()
 
@@ -72,7 +72,11 @@ def carregar_fonte(tamanho, negrito=False):
 
     if os.path.exists(caminho):
 
-        fonte = pygame.font.Font(caminho, tamanho)
+        fonte = pygame.font.Font(
+            caminho,
+            tamanho
+        )
+
         fonte.set_bold(negrito)
 
         return fonte
@@ -214,11 +218,16 @@ def botao(
     return hover
 
 
-def quebrar_texto(mensagem, fonte, largura_max):
+def quebrar_texto(
+    mensagem,
+    fonte,
+    largura_max
+):
 
     palavras = mensagem.split()
 
     linhas = []
+
     linha_atual = ""
 
     for palavra in palavras:
@@ -238,12 +247,16 @@ def quebrar_texto(mensagem, fonte, largura_max):
         else:
 
             if linha_atual:
-                linhas.append(linha_atual)
+                linhas.append(
+                    linha_atual
+                )
 
             linha_atual = palavra
 
     if linha_atual:
-        linhas.append(linha_atual)
+        linhas.append(
+            linha_atual
+        )
 
     return linhas
 
@@ -280,7 +293,9 @@ for categoria in categorias:
 
     for i in range(1, 10):
 
-        nome = puzzle.buscaCategoria(str(i))
+        nome = puzzle.buscaCategoria(
+            str(i)
+        )
 
         if nome.upper() == categoria.upper():
 
@@ -297,7 +312,7 @@ for categoria in categorias:
 
 
 # ============================================================
-# ESTADO DA INTERFACE
+# ESTADO DO JOGO
 # ============================================================
 
 rodando = True
@@ -312,6 +327,46 @@ pagina_dicas = 0
 
 
 # ============================================================
+# TABELA DO JOGADOR
+# ============================================================
+
+# 5 casas
+# N categorias por casa
+#
+# Exemplo:
+#
+# tabela_jogador[0][0]
+# = valor da categoria 0 na casa 1
+#
+# None significa que ainda não foi preenchido.
+
+tabela_jogador = [
+    [None for _ in categorias]
+    for _ in range(5)
+]
+
+
+# ============================================================
+# MENSAGEM DO JOGO
+# ============================================================
+
+mensagem_jogo = ""
+cor_mensagem = CINZA
+
+
+def mostrar_mensagem(
+    mensagem,
+    cor=CINZA
+):
+
+    global mensagem_jogo
+    global cor_mensagem
+
+    mensagem_jogo = mensagem
+    cor_mensagem = cor
+
+
+# ============================================================
 # DIMENSÕES
 # ============================================================
 
@@ -321,20 +376,25 @@ RODAPE = 62
 MARGEM = 20
 ESPACO = 14
 
-ALTURA_PAINEL = ALTURA - TOPO - RODAPE - 30
+ALTURA_PAINEL = (
+    ALTURA
+    - TOPO
+    - RODAPE
+    - 30
+)
 
 
 # ------------------------------------------------------------
-# LARGURA DOS PAINÉIS
+# PAINÉIS
 # ------------------------------------------------------------
 
-# Aproximadamente:
-# 23% esquerda
-# 52% centro
-# restante direita
+LARGURA_ESQUERDO = int(
+    LARGURA * 0.23
+)
 
-LARGURA_ESQUERDO = int(LARGURA * 0.23)
-LARGURA_DIREITO = int(LARGURA * 0.21)
+LARGURA_DIREITO = int(
+    LARGURA * 0.21
+)
 
 LARGURA_CENTRAL = (
     LARGURA
@@ -389,7 +449,7 @@ BOTAO_FECHAR = pygame.Rect(
 
 
 # ============================================================
-# DESENHO DO CABEÇALHO
+# CABEÇALHO
 # ============================================================
 
 def desenhar_cabecalho(mouse_pos):
@@ -414,7 +474,7 @@ def desenhar_cabecalho(mouse_pos):
 
     texto(
         janela,
-        "EINSTEIN",
+        "PENSE",
         FONTE_TITULO,
         BRANCO,
         25,
@@ -423,7 +483,7 @@ def desenhar_cabecalho(mouse_pos):
 
     texto(
         janela,
-        "O ENIGMA",
+        "COMIGO",
         FONTE_SUBTITULO,
         AMARELO,
         27,
@@ -431,42 +491,13 @@ def desenhar_cabecalho(mouse_pos):
     )
 
     # --------------------------------------------------------
-    # STATUS
+    # MINIMIZAR
     # --------------------------------------------------------
 
-    x_status = LARGURA - 190
-
-    texto(
-        janela,
-        "CASO #001",
-        FONTE_CATEGORIA,
-        CINZA,
-        x_status,
-        15
-    )
-
-    texto(
-        janela,
-        "INVESTIGAÇÃO",
-        FONTE_NORMAL,
-        BRANCO,
-        x_status,
-        39
-    )
-
-    pygame.draw.circle(
-        janela,
-        VERDE,
-        (LARGURA - 115, 39),
-        6
-    )
-
-    # --------------------------------------------------------
-    # BOTÃO MINIMIZAR
-    # --------------------------------------------------------
-
-    hover_minimizar = BOTAO_MINIMIZAR.collidepoint(
-        mouse_pos
+    hover_minimizar = (
+        BOTAO_MINIMIZAR.collidepoint(
+            mouse_pos
+        )
     )
 
     pygame.draw.rect(
@@ -499,23 +530,29 @@ def desenhar_cabecalho(mouse_pos):
     )
 
     # --------------------------------------------------------
-    # BOTÃO FECHAR
+    # FECHAR
     # --------------------------------------------------------
 
-    hover_fechar = BOTAO_FECHAR.collidepoint(
-        mouse_pos
+    hover_fechar = (
+        BOTAO_FECHAR.collidepoint(
+            mouse_pos
+        )
     )
 
     pygame.draw.rect(
         janela,
-        (70, 35, 38) if hover_fechar else PAINEL,
+        (70, 35, 38)
+        if hover_fechar
+        else PAINEL,
         BOTAO_FECHAR,
         border_radius=5
     )
 
     pygame.draw.rect(
         janela,
-        VERMELHO if hover_fechar else BORDA,
+        VERMELHO
+        if hover_fechar
+        else BORDA,
         BOTAO_FECHAR,
         1,
         border_radius=5
@@ -523,7 +560,9 @@ def desenhar_cabecalho(mouse_pos):
 
     pygame.draw.line(
         janela,
-        VERMELHO if hover_fechar else CINZA,
+        VERMELHO
+        if hover_fechar
+        else CINZA,
         (
             BOTAO_FECHAR.x + 8,
             BOTAO_FECHAR.y + 8
@@ -537,7 +576,9 @@ def desenhar_cabecalho(mouse_pos):
 
     pygame.draw.line(
         janela,
-        VERMELHO if hover_fechar else CINZA,
+        VERMELHO
+        if hover_fechar
+        else CINZA,
         (
             BOTAO_FECHAR.right - 8,
             BOTAO_FECHAR.y + 8
@@ -551,7 +592,7 @@ def desenhar_cabecalho(mouse_pos):
 
 
 # ============================================================
-# DESENHO DAS DICAS
+# EVIDÊNCIAS
 # ============================================================
 
 def desenhar_dicas():
@@ -579,7 +620,9 @@ def desenhar_dicas():
         PAINEL_ESQUERDO.y + 40
     )
 
-    inicio_y = PAINEL_ESQUERDO.y + 72
+    inicio_y = (
+        PAINEL_ESQUERDO.y + 72
+    )
 
     altura_card = 54
     espacamento = 8
@@ -588,10 +631,14 @@ def desenhar_dicas():
         1,
         int(
             (
-                PAINEL_ESQUERDO.height - 125
+                PAINEL_ESQUERDO.height
+                - 125
             )
             /
-            (altura_card + espacamento)
+            (
+                altura_card
+                + espacamento
+            )
         )
     )
 
@@ -602,12 +649,16 @@ def desenhar_dicas():
         len(dicas)
     )
 
-    for indice in range(inicio, fim):
+    for indice in range(
+        inicio,
+        fim
+    ):
 
         y = inicio_y + (
             indice - inicio
         ) * (
-            altura_card + espacamento
+            altura_card
+            + espacamento
         )
 
         rect = pygame.Rect(
@@ -624,8 +675,12 @@ def desenhar_dicas():
         painel(
             janela,
             rect,
-            PAINEL_2 if selecionada else PAINEL,
-            AMARELO if selecionada else BORDA,
+            PAINEL_2
+            if selecionada
+            else PAINEL,
+            AMARELO
+            if selecionada
+            else BORDA,
             7
         )
 
@@ -635,7 +690,9 @@ def desenhar_dicas():
             janela,
             numero,
             FONTE_CATEGORIA,
-            AMARELO if selecionada else CINZA,
+            AMARELO
+            if selecionada
+            else CINZA,
             rect.x + 12,
             rect.y + 9
         )
@@ -658,18 +715,19 @@ def desenhar_dicas():
                 FONTE_PEQUENA,
                 BRANCO,
                 rect.x + 45,
-                rect.y + 7 + linha_numero * 18
+                rect.y + 7 + (
+                    linha_numero * 18
+                )
             )
-
-    # --------------------------------------------------------
-    # PAGINAÇÃO
-    # --------------------------------------------------------
 
     total_paginas = max(
         1,
         (
-            len(dicas) + limite - 1
-        ) // limite
+            len(dicas)
+            + limite
+            - 1
+        )
+        // limite
     )
 
     texto(
@@ -684,10 +742,10 @@ def desenhar_dicas():
 
 
 # ============================================================
-# CARD DE INVESTIGAÇÃO
+# CARD DA CASA
 # ============================================================
 
-def desenhar_card_investigacao(
+def desenhar_card_casa(
     rect,
     numero,
     selecionado
@@ -704,7 +762,7 @@ def desenhar_card_investigacao(
         borda = BORDA
 
     # --------------------------------------------------------
-    # CARD
+    # FUNDO
     # --------------------------------------------------------
 
     pygame.draw.rect(
@@ -723,21 +781,19 @@ def desenhar_card_investigacao(
     )
 
     # --------------------------------------------------------
-    # NÚMERO
+    # CABEÇALHO DO CARD
     # --------------------------------------------------------
 
     texto(
         janela,
         f"{numero:02d}",
         FONTE_CASA,
-        AMARELO if selecionado else BRANCO,
+        AMARELO
+        if selecionado
+        else BRANCO,
         rect.x + 18,
         rect.y + 15
     )
-
-    # --------------------------------------------------------
-    # TÍTULO
-    # --------------------------------------------------------
 
     texto(
         janela,
@@ -748,10 +804,7 @@ def desenhar_card_investigacao(
         rect.y + 18
     )
 
-    # --------------------------------------------------------
-    # STATUS
-    # --------------------------------------------------------
-
+    # Indicador
     if selecionado:
 
         pygame.draw.circle(
@@ -759,18 +812,9 @@ def desenhar_card_investigacao(
             AMARELO,
             (
                 rect.right - 20,
-                rect.y + 24
+                rect.y + 25
             ),
             5
-        )
-
-        texto(
-            janela,
-            "SELECIONADA",
-            FONTE_MUITO_PEQUENA,
-            AMARELO,
-            rect.x + 65,
-            rect.y + 39
         )
 
     else:
@@ -780,18 +824,9 @@ def desenhar_card_investigacao(
             CINZA_ESCURO,
             (
                 rect.right - 20,
-                rect.y + 24
+                rect.y + 25
             ),
             5
-        )
-
-        texto(
-            janela,
-            "AGUARDANDO INVESTIGAÇÃO",
-            FONTE_MUITO_PEQUENA,
-            CINZA,
-            rect.x + 65,
-            rect.y + 39
         )
 
     # --------------------------------------------------------
@@ -813,7 +848,7 @@ def desenhar_card_investigacao(
     )
 
     # --------------------------------------------------------
-    # CATEGORIAS
+    # CATEGORIAS E VALORES
     # --------------------------------------------------------
 
     altura_linha = 29
@@ -829,7 +864,10 @@ def desenhar_card_investigacao(
             i * altura_linha
         )
 
-        # Nome da categoria
+        valor = tabela_jogador[
+            numero - 1
+        ][i]
+
         texto(
             janela,
             categoria.upper(),
@@ -839,24 +877,31 @@ def desenhar_card_investigacao(
             y
         )
 
-        # Valor ainda desconhecido
         valor_rect = pygame.Rect(
-            rect.right - 72,
-            y - 3,
-            55,
-            20
+            rect.right - 95,
+            y - 4,
+            78,
+            21
         )
 
         pygame.draw.rect(
             janela,
-            FUNDO_2,
+            FUNDO_2
+            if valor is None
+            else PAINEL_3,
             valor_rect,
             border_radius=4
         )
 
         pygame.draw.rect(
             janela,
-            BORDA,
+            BORDA
+            if valor is None
+            else (
+                AMARELO
+                if selecionado
+                else BORDA_CLARA
+            ),
             valor_rect,
             1,
             border_radius=4
@@ -864,9 +909,13 @@ def desenhar_card_investigacao(
 
         texto(
             janela,
-            "?",
+            "?"
+            if valor is None
+            else valor,
             FONTE_MUITO_PEQUENA,
-            CINZA_ESCURO,
+            CINZA_ESCURO
+            if valor is None
+            else BRANCO,
             valor_rect.centerx,
             valor_rect.centery,
             True
@@ -874,14 +923,14 @@ def desenhar_card_investigacao(
 
 
 # ============================================================
-# DESENHO DAS CASAS / INVESTIGAÇÃO
+# CENÁRIO / CASAS
 # ============================================================
 
 def desenhar_casas():
 
     texto(
         janela,
-        "CENÁRIO DA INVESTIGAÇÃO",
+        "CASAS",
         FONTE_CATEGORIA,
         AMARELO,
         PAINEL_CENTRAL.x + 20,
@@ -890,7 +939,7 @@ def desenhar_casas():
 
     texto(
         janela,
-        "Selecione uma posição para investigar",
+        "Preencha a tabela usando as evidências",
         FONTE_PEQUENA,
         CINZA,
         PAINEL_CENTRAL.x + 20,
@@ -901,12 +950,42 @@ def desenhar_casas():
     # PROGRESSO
     # --------------------------------------------------------
 
-    progresso_x = PAINEL_CENTRAL.right - 190
-    progresso_y = PAINEL_CENTRAL.y + 25
+    total_campos = (
+        5 * len(categorias)
+    )
+
+    preenchidos = 0
+
+    for casa in tabela_jogador:
+
+        for valor in casa:
+
+            if valor is not None:
+
+                preenchidos += 1
+
+    if total_campos > 0:
+
+        percentual = (
+            preenchidos
+            / total_campos
+        )
+
+    else:
+
+        percentual = 0
+
+    progresso_x = (
+        PAINEL_CENTRAL.right - 190
+    )
+
+    progresso_y = (
+        PAINEL_CENTRAL.y + 25
+    )
 
     texto(
         janela,
-        "PROGRESSO",
+        f"PROGRESSO  {int(percentual * 100)}%",
         FONTE_MUITO_PEQUENA,
         CINZA,
         progresso_x,
@@ -931,7 +1010,7 @@ def desenhar_casas():
         (
             progresso_x,
             progresso_y + 19,
-            30,
+            int(150 * percentual),
             5
         ),
         border_radius=3
@@ -941,8 +1020,13 @@ def desenhar_casas():
     # CARDS
     # --------------------------------------------------------
 
-    area_x = PAINEL_CENTRAL.x + 20
-    area_y = PAINEL_CENTRAL.y + 88
+    area_x = (
+        PAINEL_CENTRAL.x + 20
+    )
+
+    area_y = (
+        PAINEL_CENTRAL.y + 88
+    )
 
     area_largura = (
         PAINEL_CENTRAL.width - 40
@@ -952,9 +1036,6 @@ def desenhar_casas():
         PAINEL_CENTRAL.height - 105
     )
 
-    # 3 cards em cima
-    # 2 cards embaixo
-
     colunas = 3
     linhas = 2
 
@@ -963,12 +1044,16 @@ def desenhar_casas():
 
     largura_card = (
         area_largura
-        - espacamento_x * (colunas - 1)
+        - espacamento_x * (
+            colunas - 1
+        )
     ) // colunas
 
     altura_card = (
         area_altura
-        - espacamento_y * (linhas - 1)
+        - espacamento_y * (
+            linhas - 1
+        )
     ) // linhas
 
     for i in range(5):
@@ -976,12 +1061,20 @@ def desenhar_casas():
         linha = i // colunas
         coluna = i % colunas
 
-        x = area_x + coluna * (
-            largura_card + espacamento_x
+        x = (
+            area_x
+            + coluna * (
+                largura_card
+                + espacamento_x
+            )
         )
 
-        y = area_y + linha * (
-            altura_card + espacamento_y
+        y = (
+            area_y
+            + linha * (
+                altura_card
+                + espacamento_y
+            )
         )
 
         rect = pygame.Rect(
@@ -991,7 +1084,7 @@ def desenhar_casas():
             altura_card
         )
 
-        desenhar_card_investigacao(
+        desenhar_card_casa(
             rect,
             i + 1,
             i == casa_selecionada
@@ -1002,7 +1095,9 @@ def desenhar_casas():
 # PAINEL DIREITO
 # ============================================================
 
-def desenhar_investigacao():
+def desenhar_investigacao(
+    mouse_pos
+):
 
     painel(
         janela,
@@ -1011,7 +1106,7 @@ def desenhar_investigacao():
 
     texto(
         janela,
-        "SUA INVESTIGAÇÃO",
+        "PREENCHER CASA",
         FONTE_CATEGORIA,
         AMARELO,
         PAINEL_DIREITO.x + 18,
@@ -1029,7 +1124,7 @@ def desenhar_investigacao():
 
     texto(
         janela,
-        "Selecione uma categoria",
+        "Categorias",
         FONTE_PEQUENA,
         CINZA,
         PAINEL_DIREITO.x + 18,
@@ -1040,24 +1135,30 @@ def desenhar_investigacao():
     # CATEGORIAS
     # --------------------------------------------------------
 
-    inicio_y = PAINEL_DIREITO.y + 112
+    inicio_y = (
+        PAINEL_DIREITO.y + 110
+    )
 
-    altura = 43
-    espacamento = 7
+    altura_categoria = 39
+    espacamento_categoria = 6
 
     for i, categoria in enumerate(
         categorias
     ):
 
-        y = inicio_y + i * (
-            altura + espacamento
+        y = (
+            inicio_y
+            + i * (
+                altura_categoria
+                + espacamento_categoria
+            )
         )
 
         rect = pygame.Rect(
             PAINEL_DIREITO.x + 15,
             y,
             PAINEL_DIREITO.width - 30,
-            altura
+            altura_categoria
         )
 
         selecionada = (
@@ -1067,83 +1168,227 @@ def desenhar_investigacao():
         painel(
             janela,
             rect,
-            PAINEL_2 if selecionada else PAINEL,
-            AMARELO if selecionada else BORDA,
+            PAINEL_2
+            if selecionada
+            else PAINEL,
+            AMARELO
+            if selecionada
+            else BORDA,
             6
         )
 
         texto(
             janela,
             categoria.upper(),
-            FONTE_PEQUENA,
-            AMARELO if selecionada else BRANCO,
+            FONTE_MUITO_PEQUENA,
+            AMARELO
+            if selecionada
+            else BRANCO,
             rect.x + 12,
-            rect.y + 8
+            rect.centery,
+            False
         )
 
-        # Valor selecionado
+        # Valor atual da casa
+        valor_atual = tabela_jogador[
+            casa_selecionada
+        ][i]
+
         texto(
             janela,
-            "?",
-            FONTE_PEQUENA,
-            CINZA_ESCURO,
-            rect.right - 28,
+            "?"
+            if valor_atual is None
+            else valor_atual,
+            FONTE_MUITO_PEQUENA,
+            CINZA_ESCURO
+            if valor_atual is None
+            else BRANCO,
+            rect.right - 40,
             rect.centery,
             True
         )
 
     # --------------------------------------------------------
-    # INSTRUÇÃO
+    # VALORES DA CATEGORIA
     # --------------------------------------------------------
 
-    caixa_info = pygame.Rect(
-        PAINEL_DIREITO.x + 15,
-        PAINEL_DIREITO.bottom - 100,
-        PAINEL_DIREITO.width - 30,
-        75
+    categoria_nome = categorias[
+        categoria_selecionada
+    ]
+
+    valores = dados_categorias.get(
+        categoria_nome,
+        []
     )
 
-    painel(
-        janela,
-        caixa_info,
-        FUNDO_2,
-        BORDA,
-        7
+    valores_y = (
+        inicio_y
+        + len(categorias)
+        * (
+            altura_categoria
+            + espacamento_categoria
+        )
+        + 18
     )
 
     texto(
         janela,
-        "COMO JOGAR",
-        FONTE_MUITO_PEQUENA,
+        categoria_nome.upper(),
+        FONTE_CATEGORIA,
         AMARELO,
-        caixa_info.x + 12,
-        caixa_info.y + 10
+        PAINEL_DIREITO.x + 18,
+        valores_y
     )
 
     texto(
         janela,
-        "Selecione uma evidência",
+        "Escolha um valor",
         FONTE_MUITO_PEQUENA,
         CINZA,
-        caixa_info.x + 12,
-        caixa_info.y + 29
+        PAINEL_DIREITO.x + 18,
+        valores_y + 23
     )
 
-    texto(
-        janela,
-        "e investigue as posições.",
-        FONTE_MUITO_PEQUENA,
-        CINZA,
-        caixa_info.x + 12,
-        caixa_info.y + 46
+    # --------------------------------------------------------
+    # BOTÕES DE VALORES
+    # --------------------------------------------------------
+
+    valor_inicio_y = (
+        valores_y + 45
     )
+
+    altura_valor = 34
+    espacamento_valor = 6
+
+    for i, valor in enumerate(
+        valores
+    ):
+
+        y = (
+            valor_inicio_y
+            + i * (
+                altura_valor
+                + espacamento_valor
+            )
+        )
+
+        rect = pygame.Rect(
+            PAINEL_DIREITO.x + 15,
+            y,
+            PAINEL_DIREITO.width - 30,
+            altura_valor
+        )
+
+        # Verifica se esse valor já está
+        # usado em outra casa.
+        casa_com_valor = None
+
+        for casa in range(5):
+
+            if casa == casa_selecionada:
+                continue
+
+            if tabela_jogador[
+                casa
+            ][categoria_selecionada] == valor:
+
+                casa_com_valor = casa + 1
+
+                break
+
+        valor_atual = tabela_jogador[
+            casa_selecionada
+        ][categoria_selecionada]
+
+        selecionado = (
+            valor_atual == valor
+        )
+
+        ocupado = (
+            casa_com_valor is not None
+        )
+
+        if selecionado:
+
+            cor = (65, 59, 43)
+            borda = AMARELO
+            cor_texto = AMARELO_CLARO
+
+        elif ocupado:
+
+            cor = FUNDO_2
+            borda = BORDA
+            cor_texto = CINZA_ESCURO
+
+        elif rect.collidepoint(mouse_pos):
+
+            cor = PAINEL_2
+            borda = CINZA
+            cor_texto = BRANCO
+
+        else:
+
+            cor = PAINEL
+            borda = BORDA
+            cor_texto = BRANCO
+
+        pygame.draw.rect(
+            janela,
+            cor,
+            rect,
+            border_radius=6
+        )
+
+        pygame.draw.rect(
+            janela,
+            borda,
+            rect,
+            1,
+            border_radius=6
+        )
+
+        texto(
+            janela,
+            valor,
+            FONTE_MUITO_PEQUENA,
+            cor_texto,
+            rect.x + 12,
+            rect.centery,
+            False
+        )
+
+        if selecionado:
+
+            texto(
+                janela,
+                "ATIVO",
+                FONTE_MUITO_PEQUENA,
+                AMARELO,
+                rect.right - 32,
+                rect.centery,
+                True
+            )
+
+        elif ocupado:
+
+            texto(
+                janela,
+                f"CASA {casa_com_valor}",
+                FONTE_MUITO_PEQUENA,
+                CINZA_ESCURO,
+                rect.right - 35,
+                rect.centery,
+                True
+            )
 
 
 # ============================================================
 # RODAPÉ
 # ============================================================
 
-def desenhar_rodape(mouse_pos):
+def desenhar_rodape(
+    mouse_pos
+):
 
     y = ALTURA - RODAPE
 
@@ -1156,7 +1401,7 @@ def desenhar_rodape(mouse_pos):
     )
 
     # --------------------------------------------------------
-    # BOTÃO EVIDÊNCIAS
+    # EVIDÊNCIAS
     # --------------------------------------------------------
 
     botao(
@@ -1172,20 +1417,34 @@ def desenhar_rodape(mouse_pos):
     )
 
     # --------------------------------------------------------
-    # TEXTO ESC
+    # MENSAGEM
     # --------------------------------------------------------
 
-    texto(
-        janela,
-        "ESC  •  SAIR",
-        FONTE_PEQUENA,
-        CINZA,
-        195,
-        y + 22
-    )
+    if mensagem_jogo:
+
+        texto(
+            janela,
+            mensagem_jogo,
+            FONTE_MUITO_PEQUENA,
+            cor_mensagem,
+            LARGURA // 2,
+            y + 30,
+            True
+        )
+
+    else:
+
+        texto(
+            janela,
+            "ESC  •  SAIR",
+            FONTE_PEQUENA,
+            CINZA,
+            195,
+            y + 22
+        )
 
     # --------------------------------------------------------
-    # BOTÃO VERIFICAR
+    # VERIFICAR
     # --------------------------------------------------------
 
     botao(
@@ -1208,8 +1467,13 @@ def desenhar_rodape(mouse_pos):
 
 def obter_rect_casas():
 
-    area_x = PAINEL_CENTRAL.x + 20
-    area_y = PAINEL_CENTRAL.y + 88
+    area_x = (
+        PAINEL_CENTRAL.x + 20
+    )
+
+    area_y = (
+        PAINEL_CENTRAL.y + 88
+    )
 
     area_largura = (
         PAINEL_CENTRAL.width - 40
@@ -1227,12 +1491,16 @@ def obter_rect_casas():
 
     largura_card = (
         area_largura
-        - espacamento_x * (colunas - 1)
+        - espacamento_x * (
+            colunas - 1
+        )
     ) // colunas
 
     altura_card = (
         area_altura
-        - espacamento_y * (linhas - 1)
+        - espacamento_y * (
+            linhas - 1
+        )
     ) // linhas
 
     rects = []
@@ -1242,12 +1510,20 @@ def obter_rect_casas():
         linha = i // colunas
         coluna = i % colunas
 
-        x = area_x + coluna * (
-            largura_card + espacamento_x
+        x = (
+            area_x
+            + coluna * (
+                largura_card
+                + espacamento_x
+            )
         )
 
-        y = area_y + linha * (
-            altura_card + espacamento_y
+        y = (
+            area_y
+            + linha * (
+                altura_card
+                + espacamento_y
+            )
         )
 
         rects.append(
@@ -1268,7 +1544,9 @@ def obter_rect_casas():
 
 def obter_rect_dicas():
 
-    inicio_y = PAINEL_ESQUERDO.y + 72
+    inicio_y = (
+        PAINEL_ESQUERDO.y + 72
+    )
 
     altura_card = 54
     espacamento = 8
@@ -1277,10 +1555,14 @@ def obter_rect_dicas():
         1,
         int(
             (
-                PAINEL_ESQUERDO.height - 125
+                PAINEL_ESQUERDO.height
+                - 125
             )
             /
-            (altura_card + espacamento)
+            (
+                altura_card
+                + espacamento
+            )
         )
     )
 
@@ -1293,12 +1575,16 @@ def obter_rect_dicas():
 
     rects = []
 
-    for indice in range(inicio, fim):
+    for indice in range(
+        inicio,
+        fim
+    ):
 
         y = inicio_y + (
             indice - inicio
         ) * (
-            altura_card + espacamento
+            altura_card
+            + espacamento
         )
 
         rects.append(
@@ -1317,7 +1603,114 @@ def obter_rect_dicas():
 
 
 # ============================================================
-# BOTÃO VERIFICAR
+# RETÂNGULOS DAS CATEGORIAS
+# ============================================================
+
+def obter_rect_categorias():
+
+    inicio_y = (
+        PAINEL_DIREITO.y + 110
+    )
+
+    altura = 39
+    espacamento = 6
+
+    rects = []
+
+    for i in range(
+        len(categorias)
+    ):
+
+        y = (
+            inicio_y
+            + i * (
+                altura
+                + espacamento
+            )
+        )
+
+        rects.append(
+            pygame.Rect(
+                PAINEL_DIREITO.x + 15,
+                y,
+                PAINEL_DIREITO.width - 30,
+                altura
+            )
+        )
+
+    return rects
+
+
+# ============================================================
+# RETÂNGULOS DOS VALORES
+# ============================================================
+
+def obter_rect_valores():
+
+    categoria_nome = categorias[
+        categoria_selecionada
+    ]
+
+    valores = dados_categorias.get(
+        categoria_nome,
+        []
+    )
+
+    inicio_y = (
+        PAINEL_DIREITO.y + 110
+    )
+
+    altura_categoria = 39
+    espacamento_categoria = 6
+
+    valores_y = (
+        inicio_y
+        + len(categorias)
+        * (
+            altura_categoria
+            + espacamento_categoria
+        )
+        + 18
+    )
+
+    valor_inicio_y = (
+        valores_y + 45
+    )
+
+    altura_valor = 34
+    espacamento_valor = 6
+
+    rects = []
+
+    for i, valor in enumerate(
+        valores
+    ):
+
+        y = (
+            valor_inicio_y
+            + i * (
+                altura_valor
+                + espacamento_valor
+            )
+        )
+
+        rects.append(
+            (
+                valor,
+                pygame.Rect(
+                    PAINEL_DIREITO.x + 15,
+                    y,
+                    PAINEL_DIREITO.width - 30,
+                    altura_valor
+                )
+            )
+        )
+
+    return rects
+
+
+# ============================================================
+# RETÂNGULO VERIFICAR
 # ============================================================
 
 def obter_rect_verificar():
@@ -1327,6 +1720,73 @@ def obter_rect_verificar():
         ALTURA - RODAPE + 9,
         245,
         42
+    )
+
+
+# ============================================================
+# COLOCAR VALOR NA TABELA
+# ============================================================
+
+def selecionar_valor(valor):
+
+    global tabela_jogador
+
+    casa = casa_selecionada
+
+    categoria = categoria_selecionada
+
+    valor_atual = tabela_jogador[
+        casa
+    ][categoria]
+
+    # --------------------------------------------------------
+    # CLICOU NO MESMO VALOR
+    # --------------------------------------------------------
+
+    if valor_atual == valor:
+
+        tabela_jogador[
+            casa
+        ][categoria] = None
+
+        mostrar_mensagem(
+            "Valor removido.",
+            CINZA
+        )
+
+        return
+
+    # --------------------------------------------------------
+    # VERIFICA SE JÁ EXISTE EM OUTRA CASA
+    # --------------------------------------------------------
+
+    for outra_casa in range(5):
+
+        if outra_casa == casa:
+            continue
+
+        if tabela_jogador[
+            outra_casa
+        ][categoria] == valor:
+
+            mostrar_mensagem(
+                f"Valor já está na CASA {outra_casa + 1}.",
+                VERMELHO
+            )
+
+            return
+
+    # --------------------------------------------------------
+    # COLOCA O VALOR
+    # --------------------------------------------------------
+
+    tabela_jogador[
+        casa
+    ][categoria] = valor
+
+    mostrar_mensagem(
+        f"{valor} → CASA {casa + 1}",
+        VERDE
     )
 
 
@@ -1359,12 +1819,6 @@ while rodando:
             if evento.key == pygame.K_ESCAPE:
 
                 rodando = False
-
-            # F11 agora não precisa mais fazer nada,
-            # pois a janela já ocupa toda a tela.
-            elif evento.key == pygame.K_F11:
-
-                pass
 
         # ====================================================
         # CLIQUE
@@ -1400,6 +1854,8 @@ while rodando:
 
                 else:
 
+                    clicou_casa = False
+
                     for i, rect in enumerate(
                         obter_rect_casas()
                     ):
@@ -1409,6 +1865,15 @@ while rodando:
                         ):
 
                             casa_selecionada = i
+
+                            mostrar_mensagem(
+                                f"CASA {i + 1} selecionada.",
+                                AMARELO
+                            )
+
+                            clicou_casa = True
+
+                            break
 
                     # ----------------------------------------
                     # DICA
@@ -1422,30 +1887,49 @@ while rodando:
 
                             dica_selecionada = indice
 
+                            mostrar_mensagem(
+                                f"Evidência {indice + 1} selecionada.",
+                                AMARELO
+                            )
+
+                            break
+
                     # ----------------------------------------
                     # CATEGORIA
                     # ----------------------------------------
 
-                    inicio_y = (
-                        PAINEL_DIREITO.y + 112
-                    )
-
-                    for i in range(
-                        len(categorias)
+                    for i, rect in enumerate(
+                        obter_rect_categorias()
                     ):
-
-                        rect = pygame.Rect(
-                            PAINEL_DIREITO.x + 15,
-                            inicio_y + i * 50,
-                            PAINEL_DIREITO.width - 30,
-                            43
-                        )
 
                         if rect.collidepoint(
                             evento.pos
                         ):
 
                             categoria_selecionada = i
+
+                            mostrar_mensagem(
+                                f"{categorias[i]} selecionada.",
+                                AMARELO
+                            )
+
+                            break
+
+                    # ----------------------------------------
+                    # VALOR
+                    # ----------------------------------------
+
+                    for valor, rect in obter_rect_valores():
+
+                        if rect.collidepoint(
+                            evento.pos
+                        ):
+
+                            selecionar_valor(
+                                valor
+                            )
+
+                            break
 
                     # ----------------------------------------
                     # VERIFICAR
@@ -1461,6 +1945,10 @@ while rodando:
                         print("============================")
                         print(resposta)
 
+                        mostrar_mensagem(
+                            "Verificação enviada ao console.",
+                            VERDE
+                        )
 
     # ========================================================
     # DESENHO
@@ -1481,7 +1969,9 @@ while rodando:
 
     desenhar_casas()
 
-    desenhar_investigacao()
+    desenhar_investigacao(
+        mouse_pos
+    )
 
     desenhar_rodape(
         mouse_pos
