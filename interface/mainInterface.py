@@ -26,7 +26,7 @@ janela = pygame.display.set_mode(
     pygame.NOFRAME
 )
 
-pygame.display.set_caption("Pense comigo")
+pygame.display.set_caption("Pensa comigo")
 
 clock = pygame.time.Clock()
 
@@ -330,16 +330,6 @@ pagina_dicas = 0
 # TABELA DO JOGADOR
 # ============================================================
 
-# 5 casas
-# N categorias por casa
-#
-# Exemplo:
-#
-# tabela_jogador[0][0]
-# = valor da categoria 0 na casa 1
-#
-# None significa que ainda não foi preenchido.
-
 tabela_jogador = [
     [None for _ in categorias]
     for _ in range(5)
@@ -351,6 +341,7 @@ tabela_jogador = [
 # ============================================================
 
 mensagem_jogo = ""
+
 cor_mensagem = CINZA
 
 
@@ -474,7 +465,7 @@ def desenhar_cabecalho(mouse_pos):
 
     texto(
         janela,
-        "PENSE",
+        "PENSA",
         FONTE_TITULO,
         BRANCO,
         25,
@@ -592,8 +583,66 @@ def desenhar_cabecalho(mouse_pos):
 
 
 # ============================================================
-# EVIDÊNCIAS
+# DICAS
 # ============================================================
+
+def obter_limite_dicas():
+
+    altura_card = 54
+    espacamento = 8
+
+    return max(
+        1,
+        int(
+            (
+                PAINEL_ESQUERDO.height
+                - 125
+            )
+            /
+            (
+                altura_card
+                + espacamento
+            )
+        )
+    )
+
+
+def obter_total_paginas_dicas():
+
+    limite = obter_limite_dicas()
+
+    return max(
+        1,
+        (
+            len(dicas)
+            + limite
+            - 1
+        )
+        // limite
+    )
+
+
+def obter_botoes_paginacao():
+
+    botao_anterior = pygame.Rect(
+        PAINEL_ESQUERDO.x + 20,
+        PAINEL_ESQUERDO.bottom - 39,
+        32,
+        28
+    )
+
+    botao_proximo = pygame.Rect(
+        PAINEL_ESQUERDO.right - 52,
+        PAINEL_ESQUERDO.bottom - 39,
+        32,
+        28
+    )
+
+    return (
+        botao_anterior,
+        botao_proximo
+    )
+
 
 def desenhar_dicas():
 
@@ -604,7 +653,7 @@ def desenhar_dicas():
 
     texto(
         janela,
-        "EVIDÊNCIAS",
+        "DICAS",
         FONTE_CATEGORIA,
         AMARELO,
         PAINEL_ESQUERDO.x + 18,
@@ -627,20 +676,7 @@ def desenhar_dicas():
     altura_card = 54
     espacamento = 8
 
-    limite = max(
-        1,
-        int(
-            (
-                PAINEL_ESQUERDO.height
-                - 125
-            )
-            /
-            (
-                altura_card
-                + espacamento
-            )
-        )
-    )
+    limite = obter_limite_dicas()
 
     inicio = pagina_dicas * limite
 
@@ -649,16 +685,24 @@ def desenhar_dicas():
         len(dicas)
     )
 
+    # --------------------------------------------------------
+    # DESENHA AS PISTAS
+    # --------------------------------------------------------
+
     for indice in range(
         inicio,
         fim
     ):
 
-        y = inicio_y + (
-            indice - inicio
-        ) * (
-            altura_card
-            + espacamento
+        y = (
+            inicio_y
+            + (
+                indice - inicio
+            )
+            * (
+                altura_card
+                + espacamento
+            )
         )
 
         rect = pygame.Rect(
@@ -720,16 +764,19 @@ def desenhar_dicas():
                 )
             )
 
-    total_paginas = max(
-        1,
-        (
-            len(dicas)
-            + limite
-            - 1
-        )
-        // limite
+    # --------------------------------------------------------
+    # PAGINAÇÃO
+    # --------------------------------------------------------
+
+    total_paginas = (
+        obter_total_paginas_dicas()
     )
 
+    botao_anterior, botao_proximo = (
+        obter_botoes_paginacao()
+    )
+
+    # Número da página
     texto(
         janela,
         f"{pagina_dicas + 1} / {total_paginas}",
@@ -737,6 +784,87 @@ def desenhar_dicas():
         CINZA,
         PAINEL_ESQUERDO.centerx,
         PAINEL_ESQUERDO.bottom - 22,
+        True
+    )
+
+    # --------------------------------------------------------
+    # BOTÃO ANTERIOR
+    # --------------------------------------------------------
+
+    hover_anterior = (
+        botao_anterior.collidepoint(
+            pygame.mouse.get_pos()
+        )
+    )
+
+    pygame.draw.rect(
+        janela,
+        PAINEL_2
+        if hover_anterior and pagina_dicas > 0
+        else PAINEL,
+        botao_anterior,
+        border_radius=5
+    )
+
+    pygame.draw.rect(
+        janela,
+        BORDA,
+        botao_anterior,
+        1,
+        border_radius=5
+    )
+
+    texto(
+        janela,
+        "‹",
+        FONTE_NORMAL,
+        BRANCO
+        if pagina_dicas > 0
+        else CINZA_ESCURO,
+        botao_anterior.centerx,
+        botao_anterior.centery - 1,
+        True
+    )
+
+    # --------------------------------------------------------
+    # BOTÃO PRÓXIMO
+    # --------------------------------------------------------
+
+    hover_proximo = (
+        botao_proximo.collidepoint(
+            pygame.mouse.get_pos()
+        )
+    )
+
+    pygame.draw.rect(
+        janela,
+        PAINEL_2
+        if (
+            hover_proximo
+            and pagina_dicas < total_paginas - 1
+        )
+        else PAINEL,
+        botao_proximo,
+        border_radius=5
+    )
+
+    pygame.draw.rect(
+        janela,
+        BORDA,
+        botao_proximo,
+        1,
+        border_radius=5
+    )
+
+    texto(
+        janela,
+        "›",
+        FONTE_NORMAL,
+        BRANCO
+        if pagina_dicas < total_paginas - 1
+        else CINZA_ESCURO,
+        botao_proximo.centerx,
+        botao_proximo.centery - 1,
         True
     )
 
@@ -781,7 +909,7 @@ def desenhar_card_casa(
     )
 
     # --------------------------------------------------------
-    # CABEÇALHO DO CARD
+    # CABEÇALHO
     # --------------------------------------------------------
 
     texto(
@@ -804,7 +932,6 @@ def desenhar_card_casa(
         rect.y + 18
     )
 
-    # Indicador
     if selecionado:
 
         pygame.draw.circle(
@@ -848,7 +975,7 @@ def desenhar_card_casa(
     )
 
     # --------------------------------------------------------
-    # CATEGORIAS E VALORES
+    # CATEGORIAS
     # --------------------------------------------------------
 
     altura_linha = 29
@@ -923,7 +1050,7 @@ def desenhar_card_casa(
 
 
 # ============================================================
-# CENÁRIO / CASAS
+# CASAS
 # ============================================================
 
 def desenhar_casas():
@@ -939,7 +1066,7 @@ def desenhar_casas():
 
     texto(
         janela,
-        "Preencha a tabela usando as evidências",
+        "Preencha a tabela usando as dicas",
         FONTE_PEQUENA,
         CINZA,
         PAINEL_CENTRAL.x + 20,
@@ -1017,7 +1144,7 @@ def desenhar_casas():
     )
 
     # --------------------------------------------------------
-    # CARDS
+    # ÁREA DOS CARDS
     # --------------------------------------------------------
 
     area_x = (
@@ -1189,7 +1316,6 @@ def desenhar_investigacao(
             False
         )
 
-        # Valor atual da casa
         valor_atual = tabela_jogador[
             casa_selecionada
         ][i]
@@ -1209,7 +1335,7 @@ def desenhar_investigacao(
         )
 
     # --------------------------------------------------------
-    # VALORES DA CATEGORIA
+    # VALORES
     # --------------------------------------------------------
 
     categoria_nome = categorias[
@@ -1249,10 +1375,6 @@ def desenhar_investigacao(
         valores_y + 23
     )
 
-    # --------------------------------------------------------
-    # BOTÕES DE VALORES
-    # --------------------------------------------------------
-
     valor_inicio_y = (
         valores_y + 45
     )
@@ -1279,8 +1401,6 @@ def desenhar_investigacao(
             altura_valor
         )
 
-        # Verifica se esse valor já está
-        # usado em outra casa.
         casa_com_valor = None
 
         for casa in range(5):
@@ -1292,7 +1412,9 @@ def desenhar_investigacao(
                 casa
             ][categoria_selecionada] == valor:
 
-                casa_com_valor = casa + 1
+                casa_com_valor = (
+                    casa + 1
+                )
 
                 break
 
@@ -1400,25 +1522,6 @@ def desenhar_rodape(
         1
     )
 
-    # --------------------------------------------------------
-    # EVIDÊNCIAS
-    # --------------------------------------------------------
-
-    botao(
-        janela,
-        pygame.Rect(
-            25,
-            y + 13,
-            150,
-            34
-        ),
-        "EVIDÊNCIAS",
-        mouse_pos
-    )
-
-    # --------------------------------------------------------
-    # MENSAGEM
-    # --------------------------------------------------------
 
     if mensagem_jogo:
 
@@ -1439,13 +1542,9 @@ def desenhar_rodape(
             "ESC  •  SAIR",
             FONTE_PEQUENA,
             CINZA,
-            195,
+            PAINEL_ESQUERDO.x + 18,
             y + 22
         )
-
-    # --------------------------------------------------------
-    # VERIFICAR
-    # --------------------------------------------------------
 
     botao(
         janela,
@@ -1551,20 +1650,7 @@ def obter_rect_dicas():
     altura_card = 54
     espacamento = 8
 
-    limite = max(
-        1,
-        int(
-            (
-                PAINEL_ESQUERDO.height
-                - 125
-            )
-            /
-            (
-                altura_card
-                + espacamento
-            )
-        )
-    )
+    limite = obter_limite_dicas()
 
     inicio = pagina_dicas * limite
 
@@ -1580,11 +1666,15 @@ def obter_rect_dicas():
         fim
     ):
 
-        y = inicio_y + (
-            indice - inicio
-        ) * (
-            altura_card
-            + espacamento
+        y = (
+            inicio_y
+            + (
+                indice - inicio
+            )
+            * (
+                altura_card
+                + espacamento
+            )
         )
 
         rects.append(
@@ -1740,7 +1830,7 @@ def selecionar_valor(valor):
     ][categoria]
 
     # --------------------------------------------------------
-    # CLICOU NO MESMO VALOR
+    # REMOVE
     # --------------------------------------------------------
 
     if valor_atual == valor:
@@ -1757,7 +1847,7 @@ def selecionar_valor(valor):
         return
 
     # --------------------------------------------------------
-    # VERIFICA SE JÁ EXISTE EM OUTRA CASA
+    # VERIFICA DUPLICIDADE
     # --------------------------------------------------------
 
     for outra_casa in range(5):
@@ -1777,7 +1867,7 @@ def selecionar_valor(valor):
             return
 
     # --------------------------------------------------------
-    # COLOCA O VALOR
+    # SALVA
     # --------------------------------------------------------
 
     tabela_jogador[
@@ -1821,12 +1911,78 @@ while rodando:
                 rodando = False
 
         # ====================================================
+        # SCROLL DAS DICAS
+        # ====================================================
+
+        elif evento.type == pygame.MOUSEWHEEL:
+
+            mouse_pos = pygame.mouse.get_pos()
+
+            if PAINEL_ESQUERDO.collidepoint(
+                mouse_pos
+            ):
+
+                total_paginas = (
+                    obter_total_paginas_dicas()
+                )
+
+                # Scroll para baixo
+                if evento.y < 0:
+
+                    if pagina_dicas < (
+                        total_paginas - 1
+                    ):
+
+                        pagina_dicas += 1
+
+                # Scroll para cima
+                elif evento.y > 0:
+
+                    if pagina_dicas > 0:
+
+                        pagina_dicas -= 1
+
+        # ====================================================
         # CLIQUE
         # ====================================================
 
         elif evento.type == pygame.MOUSEBUTTONDOWN:
 
             if evento.button == 1:
+
+                # --------------------------------------------
+                # PAGINAÇÃO
+                # --------------------------------------------
+
+                botao_anterior, botao_proximo = (
+                    obter_botoes_paginacao()
+                )
+
+                total_paginas = (
+                    obter_total_paginas_dicas()
+                )
+
+                if botao_anterior.collidepoint(
+                    evento.pos
+                ):
+
+                    if pagina_dicas > 0:
+
+                        pagina_dicas -= 1
+
+                    continue
+
+                if botao_proximo.collidepoint(
+                    evento.pos
+                ):
+
+                    if pagina_dicas < (
+                        total_paginas - 1
+                    ):
+
+                        pagina_dicas += 1
+
+                    continue
 
                 # --------------------------------------------
                 # MINIMIZAR
@@ -1849,12 +2005,14 @@ while rodando:
                     rodando = False
 
                 # --------------------------------------------
-                # CASA
+                # RESTO DO JOGO
                 # --------------------------------------------
 
                 else:
 
-                    clicou_casa = False
+                    # ----------------------------------------
+                    # CASA
+                    # ----------------------------------------
 
                     for i, rect in enumerate(
                         obter_rect_casas()
@@ -1871,8 +2029,6 @@ while rodando:
                                 AMARELO
                             )
 
-                            clicou_casa = True
-
                             break
 
                     # ----------------------------------------
@@ -1888,7 +2044,7 @@ while rodando:
                             dica_selecionada = indice
 
                             mostrar_mensagem(
-                                f"Evidência {indice + 1} selecionada.",
+                                f"Dica {indice + 1} selecionada.",
                                 AMARELO
                             )
 
