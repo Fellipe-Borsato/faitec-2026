@@ -14,12 +14,12 @@ from zebra import zebra
 
 pygame.init()
 
+
+print("PYGAME INICIOU")
+
 LARGURA, ALTURA = 1280, 720
 
-janela = pygame.display.set_mode(
-    (LARGURA, ALTURA),
-    pygame.FULLSCREEN
-)
+janela = pygame.display.set_mode((LARGURA, ALTURA))
 
 pygame.display.set_caption("Einstein - O Enigma")
 
@@ -767,6 +767,8 @@ def obter_rect_dicas():
 # ============================================================
 # LOOP PRINCIPAL
 # ============================================================
+
+print("CHEGOU ANTES DO LOOP")
 
 while rodando:
 
