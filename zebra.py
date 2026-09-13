@@ -38,8 +38,18 @@ class zebra:
         else:
             raise Exception (f'Categoria {categoria} não encontrada')
 
-    def buscaValores(self,categoria,mostraValores=True,mostraVerbo=False):
+    def buscaValores(self,categoria,mostraValores=True,mostraVerbo=False,mostraTodos=False):
         categoria = str(categoria)
+        if not mostraTodos:
+            validos = ''
+            if not mostraVerbo:
+                validos = '0'
+            if categoria not in (self.chave[:5]):
+                raise Exception ("Categoria solicitada não utilizada")
+            for i in range(len(self.chave[:5])):
+                    if categoria == self.chave[i]:
+                        validos += self.chave[(i+1)*5:(i+1)*5+5]
+            print(validos)
         valores = []
         for file in os.listdir(self.path):
             if file[0] == categoria:
@@ -50,10 +60,14 @@ class zebra:
                         valores.append(linha.strip())
                     else:
                         valores.append(str(conteudo.index(linha)))
+                    if not mostraTodos:
+                        if str(conteudo.index(linha)) not in validos:
+                            valores.pop()
         if not mostraVerbo:
             valores.pop(0)
         if not len(valores):
             raise Exception ('Valores não encontrados')
+        valores.sort()
         return valores
     
     def buscaValor(self,dados):
@@ -86,7 +100,7 @@ class zebra:
             escolha = random.randrange(len(categorias))
             chave += categorias.pop(escolha)
         for c in range(5):
-            valores = self.buscaValores(chave[c],False)
+            valores = self.buscaValores(chave[c],False,False,True)
             for _ in range(5):
                 escolha = random.randrange(len(valores))
                 chave+= valores.pop(escolha)
