@@ -4,9 +4,12 @@ import json
 
 class zebra:
     def __init__(self,chave='12345'*6+'99991'):
-        self.path = r'./Categorias/'
-        self.chave=str(chave).replace(':','')
-        if len(str(self.chave)) != 35:
+        self.path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'Categorias'
+)
+        self.chave=str(chave)
+        if len(str(chave)) != 35:
             raise Exception ("Chave inválida")
     def chaveFormatada(self):
         mac = []
@@ -53,7 +56,7 @@ class zebra:
         valores = []
         for file in os.listdir(self.path):
             if file[0] == categoria:
-                fileopen = open(self.path + file, encoding="utf-8")
+                fileopen = open(os.path.join(self.path, file), encoding="utf-8")
                 conteudo = fileopen.readlines()
                 for linha in conteudo:
                     if mostraValores:
@@ -74,7 +77,7 @@ class zebra:
         posicao = int(dados[1])
         for file in os.listdir(self.path):
             if int(file[0]) == int(dados[0]):
-                fileopen = open(self.path + file, encoding="utf-8")
+                fileopen = open(os.path.join(self.path, file), encoding="utf-8")
                 conteudo = fileopen.readlines()
                 return conteudo[posicao].strip()
         else:

@@ -1,6 +1,11 @@
 PID/~$I_SI_ModelodeRelatóriodoPID_2o.Períodos_2026.doc
 ~$zebra.xlsx
 PID/~WRL0004.tmp
-__pycache__/thermal.cpython-313.pyc
-__pycache__/zebra.cpython-313.pyc
-__pycache__/interface.cpython-313.pyc
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pygame / projeto
+*.log
