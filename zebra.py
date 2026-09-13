@@ -11,10 +11,15 @@ class zebra:
         self.chave=str(chave)
         if len(str(chave)) != 35:
             raise Exception ("Chave inválida")
+    def chaveFormatada(self):
+        mac = []
+        for i in range(0,len(self.chave),5):
+            mac.append(f'{int(self.chave[i:i+5])}')
+        mac = ':'.join(mac)
+        return mac
 
-    def chave(self):
-        return self.chave
-    
+    def macChave(self,chaveMac):
+        pass
     def buscaCategorias(self,mostraValores=True,mostraTodas=False):
         categorias = []
         for file in os.listdir(self.path):
@@ -36,8 +41,18 @@ class zebra:
         else:
             raise Exception (f'Categoria {categoria} não encontrada')
 
-    def buscaValores(self,categoria,mostraValores=True,mostraVerbo=False):
+    def buscaValores(self,categoria,mostraValores=True,mostraVerbo=False,mostraTodos=False):
         categoria = str(categoria)
+        if not mostraTodos:
+            validos = ''
+            if not mostraVerbo:
+                validos = '0'
+            if categoria not in (self.chave[:5]):
+                raise Exception ("Categoria solicitada não utilizada")
+            for i in range(len(self.chave[:5])):
+                    if categoria == self.chave[i]:
+                        validos += self.chave[(i+1)*5:(i+1)*5+5]
+            print(validos)
         valores = []
         for file in os.listdir(self.path):
             if file[0] == categoria:
@@ -48,10 +63,14 @@ class zebra:
                         valores.append(linha.strip())
                     else:
                         valores.append(str(conteudo.index(linha)))
+                    if not mostraTodos:
+                        if str(conteudo.index(linha)) not in validos:
+                            valores.pop()
         if not mostraVerbo:
             valores.pop(0)
         if not len(valores):
             raise Exception ('Valores não encontrados')
+        valores.sort()
         return valores
     
     def buscaValor(self,dados):
@@ -70,12 +89,12 @@ class zebra:
             resposta={}
             for categoria in range(5):
                 nomeCategoria = self.buscaCategoria(self.chave[categoria])
-                valorCategoria = self.buscaValor((self.chave[categoria],self.chave[5*categoria+valor]))
+                valorCategoria = self.buscaValor((self.chave[categoria],int(self.chave[5*(categoria+1)+valor])))
                 resposta[nomeCategoria] = valorCategoria
             respostas.append(resposta)
         if len(respostas) != 5:
             raise Exception ('Resposta incompleta gerada')
-        return json.dumps(respostas)
+        return respostas
     
     def geraChave(self):
         chave = ''
@@ -84,7 +103,7 @@ class zebra:
             escolha = random.randrange(len(categorias))
             chave += categorias.pop(escolha)
         for c in range(5):
-            valores = self.buscaValores(chave[c],False)
+            valores = self.buscaValores(chave[c],False,False,True)
             for _ in range(5):
                 escolha = random.randrange(len(valores))
                 chave+= valores.pop(escolha)
