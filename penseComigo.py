@@ -38,7 +38,11 @@ def main():
         impressora.print_text()
         impressora.center(True)
         impressora.print_text(puzzle.chaveFormatada())
+        for n in range(0, 35, 5):
+            impressora.print_barcode(puzzle.chave[n:n+5])
+        #impressora.print_barcode(puzzle.chave)
         impressora.cut()
+        pass
     else:
         for dica in dicas:
             print(dica)

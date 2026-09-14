@@ -47,6 +47,17 @@ class thermal:
         output = '\n'.join(output_lines) #Junta a lista com quebra de linha
         self.device.write(0x01,output.encode('cp860')) #Manda pra impressora
 
+    def print_barcode(self, data):
+        data = str(data)
+
+        barcode = b'\x7b\x42' + data.encode('ascii')
+        self.device.write(0x01, b'\x1d\x48\x00')
+        self.device.write(0x01, b'\x1d\x68\x1a')
+        self.device.write(0x01, b'\x1d\x77\x04')
+        self.device.write(0x01, b'\x1d\x6b\x49' + bytes([len(barcode)]) + barcode)
+
+
+
     def print_qr2(self, data):
         data = data.encode("utf-8")
         #Configuração dum tanto de coisa pra imprimir QR code
