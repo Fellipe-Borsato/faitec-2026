@@ -146,7 +146,8 @@ def main():
     executar_interface(
         categorias,
         dicas,
-        respostas,
+        resposta,
+        puzzle.chaveFormatada(),
         dados_categorias,
         tabela_jogador,
         selecionar_valor,

@@ -45,6 +45,7 @@ def desenhar_interface(
     dica_selecionada,
     pagina_dicas,
 
+    chave_formatada,
     categorias,
     tabela_jogador,
     casa_selecionada,
@@ -70,7 +71,8 @@ def desenhar_interface(
         largura,
         topo,
         botao_minimizar,
-        botao_fechar
+        botao_fechar,
+        chave_formatada
     )
 
     # ========================================================
