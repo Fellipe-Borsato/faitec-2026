@@ -110,7 +110,7 @@ class zebra:
         chave += str(random.randint(1,3))
         if len(chave) != 5*6+1+4:
             raise Exception (f'Chave gerada incorretamente (chave {chave})')
-        return chave
+        self.chave = chave
 
     def geraDica(self,tipo,dados1,dados2):
         tipo = tipo.upper()
@@ -126,6 +126,8 @@ class zebra:
         dica = 'Algo errado aconteceu'
         if tipo == 'POS':
             dica = f'Na posição {dados2[1]} fica quem {self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
+        elif tipo == 'EXTRA':
+            dica = f'Em algum lugar fica quem {self.buscaValor((int(extraichave[2]),0))} {self.buscaValor((int(extraichave[2]),int(extraichave[3])))}'
         elif tipo == 'MESMAPOS':
             if dados1[1] != dados2[1]:
                 raise Exception(f'Dica inválida: {dados1} não fica na mesma posição de {dados2}')
@@ -193,6 +195,7 @@ class zebra:
             ('MESMAPOS',(2,4),(4,4)),
             ('LADO',(2,1),(1,2)),
             ('LADO',(4,2),(3,1)),
+            ('EXTRA',(0,0),(5,4))
         ]
         regras.append(regradicas)
         regradicas = [
@@ -214,7 +217,12 @@ class zebra:
             ('LADO',(3,3),(4,4)),
             ('ESQ',(3,4),(3,5)),
             ('ESQ+',(3,2),(3,5)),
-            ('DIR',(3,2),(3,1))
+            ('DIR',(3,2),(3,1)),
+            ('EXTRA',(0,0),(1,5)),
+            ('EXTRA',(0,0),(2,2)),
+            ('EXTRA',(0,0),(4,1)),
+            ('EXTRA',(0,0),(4,3)),
+            ('EXTRA',(0,0),(5,1))
         ]
         regras.append(regradicas)
         regradicas = [
@@ -235,7 +243,9 @@ class zebra:
             ('PONTA',(0,0),(3,5)),
             ('MESMAPOS',(1,3),(4,3)),
             ('LADO',(3,5),(3,4)),
-            ('MESMAPOS',(5,2),(4,2))
+            ('MESMAPOS',(5,2),(4,2)),
+            ('EXTRA',(0,0),(3,1)),
+            ('EXTRA',(0,0),(5,5))
         ]
         regras.append(regradicas)
         regradicas = regras[int(self.chave[-1])-1]

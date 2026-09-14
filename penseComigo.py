@@ -14,9 +14,9 @@ from interface.config.cores import (
 
 def main():
 
-    gerador = zebra()
-    chave = gerador.geraChave()
-    puzzle = zebra("23798:39457:83295:59168:15826:16784:13973")
+    puzzle = zebra()
+    puzzle.geraChave()
+    print(puzzle.chaveFormatada())
     dicas = puzzle.geraDicas()
     respostas = puzzle.pegaResposta()
     for resposta in range(len(respostas)):
