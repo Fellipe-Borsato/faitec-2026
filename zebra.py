@@ -11,12 +11,14 @@ class zebra:
         self.chave=str(chave.replace(":",""))
         if len(str(self.chave)) != 35:
             raise Exception ("Chave inválida")
+        
     def chaveFormatada(self):
         mac = []
         for i in range(0,len(self.chave),5):
             mac.append(f'{int(self.chave[i:i+5])}')
         mac = ':'.join(mac)
         return mac
+    
     def buscaCategorias(self,mostraValores=True,mostraTodas=False):
         categorias = []
         for file in os.listdir(self.path):

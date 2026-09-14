@@ -43,7 +43,6 @@ def desenhar_cabecalho(
         1
     )
 
-    # LOGO
 
     texto(
         janela,
@@ -72,8 +71,6 @@ def desenhar_cabecalho(
         37,
         True
     )
-
-    # MINIMIZAR
 
     hover_minimizar = (
         botao_minimizar.collidepoint(
@@ -109,8 +106,6 @@ def desenhar_cabecalho(
         ),
         2
     )
-
-    # FECHAR
 
     hover_fechar = (
         botao_fechar.collidepoint(

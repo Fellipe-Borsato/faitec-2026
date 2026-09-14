@@ -5,12 +5,6 @@ from interface.mainInterface import (
     ui
 )
 
-from interface.config.cores import (
-    CINZA,
-    VERDE,
-    VERMELHO
-)
-
 
 def main():
 

@@ -41,8 +41,6 @@ def desenhar_casas(
         painel_central.y + 42
     )
 
-    # PROGRESSO
-
     total_campos = (
         5 * len(categorias)
     )
@@ -108,8 +106,6 @@ def desenhar_casas(
         ),
         border_radius=3
     )
-
-    # ÁREA DOS CARDS
 
     area_x = painel_central.x + 20
     area_y = painel_central.y + 88

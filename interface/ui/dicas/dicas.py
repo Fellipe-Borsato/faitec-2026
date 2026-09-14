@@ -114,7 +114,7 @@ def desenhar_dicas(
 
     texto(
         janela,
-        f"{len(dicas)} pistas encontradas",
+        f"{len(dicas)} dicas encontradas",
         FONTE_PEQUENA,
         CINZA,
         painel_esquerdo.x + 18,
@@ -139,9 +139,6 @@ def desenhar_dicas(
         len(dicas)
     )
 
-    # --------------------------------------------------------
-    # DESENHA AS PISTAS
-    # --------------------------------------------------------
 
     for indice in range(
         inicio,
@@ -218,9 +215,6 @@ def desenhar_dicas(
                 )
             )
 
-    # --------------------------------------------------------
-    # PAGINAÇÃO
-    # --------------------------------------------------------
 
     total_paginas = (
         obter_total_paginas_dicas(
@@ -245,9 +239,6 @@ def desenhar_dicas(
         True
     )
 
-    # --------------------------------------------------------
-    # BOTÃO ANTERIOR
-    # --------------------------------------------------------
 
     hover_anterior = (
         botao_anterior.collidepoint(
@@ -283,10 +274,6 @@ def desenhar_dicas(
         botao_anterior.centery - 1,
         True
     )
-
-    # --------------------------------------------------------
-    # BOTÃO PRÓXIMO
-    # --------------------------------------------------------
 
     hover_proximo = (
         botao_proximo.collidepoint(

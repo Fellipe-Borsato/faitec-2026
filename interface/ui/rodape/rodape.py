@@ -49,8 +49,6 @@ def desenhar_rodape(
             True
         )
     
-    #else:
-
     texto(
         janela,
         "ESC  •  SAIR",
