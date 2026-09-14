@@ -187,6 +187,7 @@ def main():
         categorias,
         dicas,
         resposta,
+        puzzle.chaveFormatada(),
         dados_categorias,
         tabela_jogador,
         selecionar_valor,

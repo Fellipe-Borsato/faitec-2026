@@ -15,7 +15,8 @@ from interface.config.cores import (
 
 from interface.config.fontes import (
     FONTE_TITULO,
-    FONTE_SUBTITULO
+    FONTE_SUBTITULO,
+    FONTE_MUITO_PEQUENA
 )
 
 def desenhar_cabecalho(
@@ -24,7 +25,8 @@ def desenhar_cabecalho(
     largura,
     topo,
     botao_minimizar,
-    botao_fechar
+    botao_fechar,
+    chave_formatada
 ):
 
     pygame.draw.rect(
@@ -59,6 +61,16 @@ def desenhar_cabecalho(
         AMARELO,
         27,
         52
+    )
+
+    texto(
+        janela,
+        f"CHAVE: {chave_formatada}",
+        FONTE_MUITO_PEQUENA,
+        CINZA,
+         largura // 2,
+        37,
+        True
     )
 
     # MINIMIZAR
