@@ -49,6 +49,15 @@ def desenhar_rodape(
             True
         )
 
+        texto(
+                    janela,
+                    "ESC  •  SAIR",
+                    FONTE_PEQUENA,
+                    CINZA,
+                    painel_esquerdo.x + 18,
+                    y + 22
+                )
+
     else:
 
         texto(
