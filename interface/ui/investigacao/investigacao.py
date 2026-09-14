@@ -68,10 +68,6 @@ def desenhar_investigacao(
         painel_direito.y + 84
     )
 
-    # --------------------------------------------------------
-    # CATEGORIAS
-    # --------------------------------------------------------
-
     inicio_y = (
         painel_direito.y + 110
     )
@@ -143,10 +139,6 @@ def desenhar_investigacao(
             rect.centery,
             True
         )
-
-    # --------------------------------------------------------
-    # VALORES
-    # --------------------------------------------------------
 
     categoria_nome = categorias[
         categoria_selecionada

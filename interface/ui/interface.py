@@ -61,9 +61,6 @@ def desenhar_interface(
         FUNDO
     )
 
-    # ========================================================
-    # CABEÇALHO
-    # ========================================================
 
     desenhar_cabecalho(
         janela,
@@ -75,10 +72,6 @@ def desenhar_interface(
         chave_formatada
     )
 
-    # ========================================================
-    # DICAS
-    # ========================================================
-
     desenhar_dicas(
         janela,
         painel_esquerdo,
@@ -87,9 +80,6 @@ def desenhar_interface(
         pagina_dicas
     )
 
-    # ========================================================
-    # PAINEL CENTRAL
-    # ========================================================
 
     painel(
         janela,
@@ -104,9 +94,6 @@ def desenhar_interface(
         casa_selecionada
     )
 
-    # ========================================================
-    # INVESTIGAÇÃO
-    # ========================================================
 
     desenhar_investigacao(
         janela,
@@ -119,9 +106,7 @@ def desenhar_interface(
         categoria_selecionada
     )
 
-    # ========================================================
-    # RODAPÉ
-    # ========================================================
+
 
     desenhar_rodape(
         janela,

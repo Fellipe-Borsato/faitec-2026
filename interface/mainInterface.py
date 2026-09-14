@@ -174,17 +174,11 @@ class ui():
 
             for evento in pygame.event.get():
 
-                # ==================================================
-                # SAIR
-                # ==================================================
 
                 if evento.type == pygame.QUIT:
 
                     rodando = False
 
-                # ==================================================
-                # TECLADO
-                # ==================================================
 
                 elif evento.type == pygame.KEYDOWN:
 
@@ -192,9 +186,6 @@ class ui():
 
                         rodando = False
 
-                # ==================================================
-                # SCROLL DAS DICAS
-                # ==================================================
 
                 elif evento.type == pygame.MOUSEWHEEL:
 
@@ -221,18 +212,12 @@ class ui():
 
                                 pagina_dicas -= 1
 
-                # ==================================================
-                # CLIQUE
-                # ==================================================
 
                 elif evento.type == pygame.MOUSEBUTTONDOWN:
 
                     if evento.button != 1:
                         continue
 
-                    # ----------------------------------------------
-                    # PAGINAÇÃO
-                    # ----------------------------------------------
 
                     botao_anterior, botao_proximo = (
                         obter_botoes_paginacao(
@@ -267,9 +252,6 @@ class ui():
 
                         continue
 
-                    # ----------------------------------------------
-                    # MINIMIZAR
-                    # ----------------------------------------------
 
                     if botao_minimizar.collidepoint(
                         evento.pos
@@ -279,9 +261,6 @@ class ui():
 
                         continue
 
-                    # ----------------------------------------------
-                    # FECHAR
-                    # ----------------------------------------------
 
                     if botao_fechar.collidepoint(
                         evento.pos
@@ -291,9 +270,6 @@ class ui():
 
                         continue
 
-                    # ----------------------------------------------
-                    # CASAS
-                    # ----------------------------------------------
 
                     for i, rect in enumerate(
                         obter_rect_casas(
@@ -314,9 +290,6 @@ class ui():
 
                             break
 
-                    # ----------------------------------------------
-                    # DICAS
-                    # ----------------------------------------------
 
                     for indice, rect in obter_rect_dicas(
                         painel_esquerdo,
@@ -337,9 +310,6 @@ class ui():
 
                             break
 
-                    # ----------------------------------------------
-                    # CATEGORIAS
-                    # ----------------------------------------------
 
                     for i, rect in enumerate(
                         obter_rect_categorias(
@@ -361,9 +331,6 @@ class ui():
 
                             break
 
-                    # ----------------------------------------------
-                    # VALORES
-                    # ----------------------------------------------
 
                     for valor, rect in obter_rect_valores(
                         painel_direito,
@@ -384,9 +351,6 @@ class ui():
 
                             break
 
-                    # ----------------------------------------------
-                    # VERIFICAR
-                    # ----------------------------------------------
 
                     rect_verificar = obter_rect_verificar(
                         largura,
@@ -421,9 +385,7 @@ class ui():
                             )
                         print(self.respostas)
                         print(self.tabela_jogador)
-            # ======================================================
-            # DESENHO
-            # ======================================================
+
 
             mensagem_jogo, cor_mensagem = self.obter_mensagem()
 
