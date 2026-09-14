@@ -1,5 +1,5 @@
 import pygame
-
+from thermal import thermal
 from interface.ui.interface import (
     desenhar_interface
 )
@@ -20,7 +20,8 @@ from interface.ui.investigacao.investigacao import (
 )
 
 from interface.ui.rodape.rodape import (
-    obter_rect_verificar
+    obter_rect_verificar,
+    obter_rect_imprimir
 )
 
 from interface.config.cores import (
@@ -46,12 +47,15 @@ class ui():
         ]
         self.mensagem_jogo = ""
         self.cor_mensagem = CINZA
+        self.impressora = thermal()
+        
     def mostrar_mensagem(self,
         mensagem,
         cor=CINZA
     ):
         self.mensagem_jogo = mensagem
         self.cor_mensagem = cor
+        self.impressora = thermal()
 
     def obter_mensagem(self):
         return self.mensagem_jogo, self.cor_mensagem
@@ -132,15 +136,17 @@ class ui():
                     self.puzzle.buscaValores(codigo,mostraValores=True))
 
         pygame.init()
-
-        info = pygame.display.Info()
+        pdisplay = pygame.display
+        pdisplay.set_mode(display=0)
+        info = pdisplay.Info()
 
         largura = info.current_w
         altura = info.current_h
 
-        janela = pygame.display.set_mode(
+        janela = pdisplay.set_mode(
             (largura, altura),
             pygame.NOFRAME
+            
         )
 
         pygame.display.set_caption(
@@ -212,10 +218,21 @@ class ui():
 
                                 pagina_dicas -= 1
 
-
                 elif evento.type == pygame.MOUSEBUTTONDOWN:
+                    if evento.button == 2:
+                        rect_verificar = obter_rect_verificar(
+                            largura,
+                            altura,
+                            RODAPE
+                        )
 
-                    if evento.button != 1:
+                        if rect_verificar.collidepoint(
+                            evento.pos
+                        ):
+                            print(self.respostas)
+                            print(self.tabela_jogador)
+
+                    elif evento.button != 1:
                         continue
 
 
@@ -361,18 +378,7 @@ class ui():
                     if rect_verificar.collidepoint(
                         evento.pos
                     ):
-                        """
-                        print()
-                        print("============================")
-                        print("SOLUÇÃO DO ENIGMA")
-                        print("============================")
-                        print(resposta)
 
-                        mostrar_mensagem(
-                            "Verificação enviada ao console.",
-                            VERDE
-                        )
-                        """
                         if self.respostas == self.tabela_jogador:
                             self.mostrar_mensagem(
                                 "SOLUÇÃO CORRETA",
@@ -383,8 +389,35 @@ class ui():
                                 "SOLUÇÃO INCORRETA",
                                 VERMELHO
                             )
-                        print(self.respostas)
-                        print(self.tabela_jogador)
+                        
+                    rect_imprimir = obter_rect_imprimir(
+                        largura,
+                        altura,
+                        RODAPE
+                    )
+
+                    if rect_imprimir.collidepoint(
+                        evento.pos
+                    ):
+                        tempdicas = self.puzzle.geraDicas(True)
+                        if self.impressora:
+                            self.impressora.fonte(True)
+                            for dica in tempdicas:
+                                self.impressora.print_text(dica)
+                            self.impressora.print_text()
+                            self.impressora.center(True)
+                            self.impressora.print_text(self.puzzle.chaveFormatada())
+                            for n in range(0, 35, 5):
+                                self.impressora.print_barcode(self.puzzle.chave[n:n+5])
+                            #impressora.print_barcode(puzzle.chave)
+                            self.impressora.cut()
+                            pass
+                        else:
+                            for dica in tempdicas:
+                                print(dica)
+                            print()
+                            print(self.puzzle.chaveFormatada())
+                            print()
 
 
             mensagem_jogo, cor_mensagem = self.obter_mensagem()

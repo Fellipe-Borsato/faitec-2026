@@ -179,7 +179,7 @@ class zebra:
             dica += ' ESTÁ EM UMA DAS PONTAS'
         return corrigeGramatica(dica)
     
-    def geraDicas(self):
+    def geraDicas(self,geraExtra=False):
         regras = []
         regradicas = [
             ('MESMAPOS',(2,3),(1,3)),
@@ -252,7 +252,15 @@ class zebra:
         regras.append(regradicas)
         regradicas = regras[int(self.chave[-1])-1]
         random.seed(self.chave[-5:-1])
+        extras = []
+        temp = []
+        for dica in regradicas:
+            if dica[0] != 'EXTRA':
+                temp.append(dica)
+        regradicas = temp
         random.shuffle(regradicas)
+        if geraExtra:
+            regradicas += extras
         dicas = []
         for regra in regradicas:
             dicas.append(self.geraDica(regra[0],regra[1],regra[2]))
