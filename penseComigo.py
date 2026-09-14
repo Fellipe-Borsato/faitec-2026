@@ -15,93 +15,54 @@ from interface.config.cores import (
 def main():
 
     gerador = zebra()
-
     chave = gerador.geraChave()
-
-    puzzle = zebra(chave)
-
+    puzzle = zebra("23798:39457:83295:59168:15826:16784:13973")
     dicas = puzzle.geraDicas()
+    respostas = puzzle.pegaResposta()
+    for resposta in range(len(respostas)):
+        listasol = []
+        dicionario_ordenado = dict(sorted(respostas[resposta].items()))
+        respostas[resposta] = dicionario_ordenado
+        for key,value in respostas[resposta].items():
+            listasol.append(value)
+        respostas[resposta] = listasol
+    print(respostas)
 
-    resposta = puzzle.pegaResposta()
-
-    categorias = puzzle.buscaCategorias(
-        mostraValores=True,
-        mostraTodas=False
-    )
-
-
-    impressora = thermal()
-
+    categorias = puzzle.buscaCategorias(mostraValores=True,mostraTodas=False)
+    #impressora = thermal()
+    impressora = False
     if impressora:
-
         impressora.fonte(True)
-
         for dica in dicas:
-
-            impressora.print_text(
-                dica
-            )
-
+            impressora.print_text(dica)
         impressora.print_text()
-
         impressora.center(True)
-
-        impressora.print_text(
-            puzzle.chaveFormatada()
-        )
-
+        impressora.print_text(puzzle.chaveFormatada())
         impressora.cut()
-
     else:
-
         for dica in dicas:
-
             print(dica)
-
         print()
-
-        print(
-            puzzle.chaveFormatada()
-        )
-
+        print(puzzle.chaveFormatada())
         print()
-
-
 
     dados_categorias = {}
-
     for categoria in categorias:
-
         codigo = None
-
         for i in range(1, 10):
-
-            nome = puzzle.buscaCategoria(
-                str(i)
-            )
-
+            nome = puzzle.buscaCategoria(str(i))
             if nome.upper() == categoria.upper():
-
                 codigo = str(i)
-
                 break
-
         if codigo is not None:
-
             dados_categorias[categoria] = (
-                puzzle.buscaValores(
-                    codigo,
-                    mostraValores=True
-                )
-            )
+                puzzle.buscaValores(codigo,mostraValores=True))
 
 
     tabela_jogador = [
         [None for _ in categorias]
         for _ in range(5)
     ]
-
-
 
     mensagem_jogo = ""
     cor_mensagem = CINZA
@@ -117,7 +78,6 @@ def main():
 
         mensagem_jogo = mensagem
         cor_mensagem = cor
-
 
     def obter_mensagem():
 
@@ -186,7 +146,7 @@ def main():
     executar_interface(
         categorias,
         dicas,
-        resposta,
+        respostas,
         dados_categorias,
         tabela_jogador,
         selecionar_valor,

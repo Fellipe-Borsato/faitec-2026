@@ -314,7 +314,7 @@ def executar_interface(
                 if rect_verificar.collidepoint(
                     evento.pos
                 ):
-
+                    """
                     print()
                     print("============================")
                     print("SOLUÇÃO DO ENIGMA")
@@ -325,7 +325,19 @@ def executar_interface(
                         "Verificação enviada ao console.",
                         VERDE
                     )
-
+                    """
+                    if resposta == tabela_jogador:
+                        mostrar_mensagem(
+                            "SOLUÇÃO CORRETA",
+                            VERDE
+                        )
+                    else:
+                        mostrar_mensagem(
+                            "SOLUÇÃO INCORRETA",
+                            VERMELHO
+                        )
+                    print(resposta)
+                    print(tabela_jogador)
         # ======================================================
         # DESENHO
         # ======================================================

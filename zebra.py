@@ -5,11 +5,11 @@ import json
 class zebra:
     def __init__(self,chave='12345'*6+'99991'):
         self.path = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
+       os.path.dirname(os.path.abspath(__file__)),
     'Categorias'
 )
-        self.chave=str(chave)
-        if len(str(chave)) != 35:
+        self.chave=str(chave.replace(":",""))
+        if len(str(self.chave)) != 35:
             raise Exception ("Chave inválida")
     def chaveFormatada(self):
         mac = []
@@ -17,9 +17,6 @@ class zebra:
             mac.append(f'{int(self.chave[i:i+5])}')
         mac = ':'.join(mac)
         return mac
-
-    def macChave(self,chaveMac):
-        pass
     def buscaCategorias(self,mostraValores=True,mostraTodas=False):
         categorias = []
         for file in os.listdir(self.path):
@@ -30,6 +27,7 @@ class zebra:
                     categorias.append(file.split('.')[0])
         if not len(categorias):
             raise Exception ('Categorias não encontradas')
+        categorias.sort()
         return categorias
 
     def buscaCategoria(self,categoria):
@@ -52,7 +50,6 @@ class zebra:
             for i in range(len(self.chave[:5])):
                     if categoria == self.chave[i]:
                         validos += self.chave[(i+1)*5:(i+1)*5+5]
-            print(validos)
         valores = []
         for file in os.listdir(self.path):
             if file[0] == categoria:
@@ -122,6 +119,7 @@ class zebra:
             texto = texto.upper()
             texto = texto.replace(' QUEM A ', ' A ')
             texto = texto.replace(' É,O ',' O ')
+            texto = texto.replace('É,O ','O ')
             texto = texto.replace(' QUEM O ', ' O ')
             texto = texto.replace(' DE O ',' DO ')
             return texto

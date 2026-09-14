@@ -48,17 +48,17 @@ def desenhar_rodape(
             y + 30,
             True
         )
+    
+    #else:
 
-    else:
-
-        texto(
-            janela,
-            "ESC  •  SAIR",
-            FONTE_PEQUENA,
-            CINZA,
-            painel_esquerdo.x + 18,
-            y + 22
-        )
+    texto(
+        janela,
+        "ESC  •  SAIR",
+        FONTE_PEQUENA,
+        CINZA,
+        painel_esquerdo.x + 18,
+        y + 22
+    )
 
     botao(
         janela,
