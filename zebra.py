@@ -257,6 +257,8 @@ class zebra:
         for dica in regradicas:
             if dica[0] != 'EXTRA':
                 temp.append(dica)
+            else:
+                extras.append(dica)
         regradicas = temp
         random.shuffle(regradicas)
         if geraExtra:
