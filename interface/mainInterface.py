@@ -48,6 +48,7 @@ class ui():
         self.mensagem_jogo = ""
         self.cor_mensagem = CINZA
         self.impressora = thermal()
+        self.dicas_usadas = set()
         
     def mostrar_mensagem(self,
         mensagem,
@@ -60,8 +61,11 @@ class ui():
     def obter_mensagem(self):
         return self.mensagem_jogo, self.cor_mensagem
 
-
-
+    def alternar_dica_usada(self, indice):
+        if indice in self.dicas_usadas:
+            self.dicas_usadas.remove(indice)
+        else:
+            self.dicas_usadas.add(indice)
 
     def selecionar_valor(self,
         valor,
@@ -314,10 +318,28 @@ class ui():
                         pagina_dicas
                     ):
 
+                        x_rect = pygame.Rect(
+                            rect.right - 18,
+                            rect.bottom - 18,
+                            12,
+                            12
+                        )
+
+                        if x_rect.collidepoint(evento.pos):
+                            self.dicas_usadas.discard(indice)
+                            if dica_selecionada == indice:
+                                dica_selecionada = -1
+                            self.mostrar_mensagem(
+                                f"Dica {indice + 1} desmarcada.",
+                                AMARELO
+                            )
+                            break
+
                         if rect.collidepoint(
                             evento.pos
                         ):
 
+                            self.dicas_usadas.add(indice)
                             dica_selecionada = indice
 
                             self.mostrar_mensagem(
@@ -444,7 +466,8 @@ class ui():
                 self.dados_categorias,
                 categoria_selecionada,
                 mensagem_jogo,
-                cor_mensagem
+                cor_mensagem,
+                self.dicas_usadas
             )
 
             clock.tick(60)

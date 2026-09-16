@@ -13,7 +13,8 @@ from interface.config.cores import (
     BRANCO,
     CINZA,
     CINZA_ESCURO,
-    AMARELO
+    AMARELO,
+    PRETO
 )
 
 from interface.config.fontes import (
@@ -90,12 +91,22 @@ def obter_botoes_paginacao(
     )
 
 
+def obter_rect_x_dica(rect):
+    return pygame.Rect(
+        rect.right - 18,
+        rect.bottom - 18,
+        12,
+        12
+    )
+
+
 def desenhar_dicas(
     janela,
     painel_esquerdo,
     dicas,
     dica_selecionada,
-    pagina_dicas
+    pagina_dicas,
+    dicas_usadas=None
 ):
 
     painel(
@@ -164,7 +175,8 @@ def desenhar_dicas(
         )
 
         selecionada = (
-            indice == dica_selecionada
+            dicas_usadas is not None
+            and indice in dicas_usadas
         )
 
         painel(
@@ -193,7 +205,6 @@ def desenhar_dicas(
         )
 
         dica = dicas[indice]
-
         linhas = quebrar_texto(
             dica,
             FONTE_PEQUENA,
@@ -213,6 +224,34 @@ def desenhar_dicas(
                 rect.y + 7 + (
                     linha_numero * 18
                 )
+            )
+
+        if selecionada:
+            x_rect = obter_rect_x_dica(rect)
+
+            pygame.draw.rect(
+                janela,
+                PAINEL_2,
+                x_rect,
+                border_radius=4
+            )
+
+            pygame.draw.rect(
+                janela,
+                BORDA,
+                x_rect,
+                1,
+                border_radius=4
+            )
+
+            texto(
+                janela,
+                "X",
+                FONTE_PEQUENA,
+                BRANCO,
+                x_rect.centerx,
+                x_rect.centery,
+                True
             )
 
 

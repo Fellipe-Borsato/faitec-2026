@@ -54,7 +54,8 @@ def desenhar_interface(
     categoria_selecionada,
 
     mensagem_jogo,
-    cor_mensagem
+    cor_mensagem,
+    dicas_usadas=None
 ):
 
     janela.fill(
@@ -77,7 +78,8 @@ def desenhar_interface(
         painel_esquerdo,
         dicas,
         dica_selecionada,
-        pagina_dicas
+        pagina_dicas,
+        dicas_usadas
     )
 
 
