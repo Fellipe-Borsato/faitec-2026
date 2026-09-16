@@ -1,8 +1,7 @@
 import pygame
 import sys
-import os
-import subprocess
-import random
+from zebra import zebra
+
 
 from interface.config.cores import (
     FUNDO,
@@ -18,6 +17,7 @@ from interface.config.cores import (
     AMARELO,
     AMARELO_CLARO,
     PRETO,
+    VERMELHO
 )
 
 from interface.config.fontes import (
@@ -28,577 +28,599 @@ from interface.config.fontes import (
     FONTE_PEQUENA,
 )
 
+class menuInicial():
+    def __init__(self):
+        from interface.mainInterface import ui
+        self.telajogo = ui()
+        self.rodando=False
+        pygame.init()
+        pdisplay = pygame.display
+        pdisplay.set_mode(display=0)
+        info = pdisplay.Info()
+
+        self.LARGURA = info.current_w
+        self.ALTURA = info.current_h
+        self.tela = pdisplay.set_mode(
+                (self.LARGURA, self.ALTURA),
+                pygame.NOFRAME
+            )
+        pygame.display.set_caption("PENSA COMIGO")
+        self.clock = pygame.time.Clock()
+
+        self.fonte_titulo = FONTE_TITULO
+        self.fonte_subtitulo = FONTE_SUBTITULO
+        self.fonte_botao = FONTE_CATEGORIA
+        self.fonte_pequena = FONTE_PEQUENA
+        self.fonte_seed = FONTE_NORMAL
+        self.fonte_interrogacao = FONTE_CATEGORIA
 
 
-pygame.init()
+    def desenhar_texto(self,texto, fonte, cor, x, y, centralizado=True):
+        superficie = fonte.render(texto, True, cor)
 
-info_tela = pygame.display.Info()
-LARGURA = info_tela.current_w
-ALTURA = info_tela.current_h
+        if centralizado:
+            rect = superficie.get_rect(center=(x, y))
+        else:
+            rect = superficie.get_rect(topleft=(x, y))
 
-tela = pygame.display.set_mode((LARGURA, ALTURA), pygame.FULLSCREEN)
-pygame.display.set_caption("PENSE COMIGO")
-
-clock = pygame.time.Clock()
-
-
-fonte_titulo = FONTE_TITULO
-fonte_subtitulo = FONTE_SUBTITULO
-fonte_botao = FONTE_CATEGORIA
-fonte_pequena = FONTE_PEQUENA
-fonte_seed = FONTE_NORMAL
-fonte_interrogacao = FONTE_CATEGORIA
+        self.tela.blit(superficie, rect)
 
 
-def desenhar_texto(texto, fonte, cor, x, y, centralizado=True):
-    superficie = fonte.render(texto, True, cor)
+    def desenhar_botao(self,rect, texto, mouse_pos, destaque=False):
+        passou_mouse = rect.collidepoint(mouse_pos)
 
-    if centralizado:
-        rect = superficie.get_rect(center=(x, y))
-    else:
-        rect = superficie.get_rect(topleft=(x, y))
-
-    tela.blit(superficie, rect)
-
-
-def desenhar_botao(rect, texto, mouse_pos, destaque=False):
-    passou_mouse = rect.collidepoint(mouse_pos)
-
-    if destaque:
-        cor_fundo = AMARELO_CLARO if passou_mouse else AMARELO
-        cor_texto = PRETO
-        cor_borda = AMARELO_CLARO if passou_mouse else AMARELO
-    else:
-        cor_fundo = PAINEL_2 if not passou_mouse else PAINEL_3
-        cor_texto = BRANCO if not passou_mouse else BRANCO
-        cor_borda = BORDA_CLARA if passou_mouse else BORDA
-
-    pygame.draw.rect(
-        tela,
-        cor_fundo,
-        rect,
-        border_radius=12
-    )
-
-    pygame.draw.rect(
-        tela,
-        cor_borda,
-        rect,
-        width=2,
-        border_radius=12
-    )
-
-    desenhar_texto(
-        texto,
-        fonte_botao,
-        cor_texto,
-        rect.centerx,
-        rect.centery
-    )
-
-
-def abrir_jogo(seed=None):
-    """
-    Abre o 'penseComigo.py'.
-
-    Se houver seed, envia a seed para o jogo.
-    """
-
-    pasta = os.path.dirname(os.path.abspath(__file__))
-    arquivo_jogo = os.path.join(pasta, "penseComigo.py")
-    interpretador = sys.executable
-
-    if seed is None:
-        subprocess.Popen(
-            [interpretador, arquivo_jogo],
-            cwd=pasta
-        )
-    else:
-        subprocess.Popen(
-            [interpretador, arquivo_jogo, str(seed)],
-            cwd=pasta
-        )
-
-    pygame.quit()
-    sys.exit()
-
-
-def desenhar_ajuda():
-    largura = 540
-    altura = 260
-
-    x = (LARGURA - largura) // 2
-    y = (ALTURA - altura) // 2
-
-    sombra = pygame.Rect(x + 10, y + 10, largura, altura)
-    painel = pygame.Rect(x, y, largura, altura)
-
-    pygame.draw.rect(
-        tela,
-        PRETO,
-        sombra,
-        border_radius=16
-    )
-
-    pygame.draw.rect(
-        tela,
-        PAINEL,
-        painel,
-        border_radius=16
-    )
-
-    pygame.draw.rect(
-        tela,
-        BORDA_CLARA,
-        painel,
-        width=2,
-        border_radius=16
-    )
-
-    desenhar_texto(
-        "COMO JOGAR",
-        fonte_botao,
-        BRANCO,
-        LARGURA // 2,
-        y + 42
-    )
-
-    for indice, linha in enumerate([
-        "Resolva o quebra-cabeça usando a lógica.",
-        "Use as pistas para descobrir a posição correta.",
-        "Acerte todas as posições para vencer."
-    ]):
-        desenhar_texto(
-            linha,
-            fonte_pequena,
-            CINZA,
-            LARGURA // 2,
-            y + 95 + indice * 30
-        )
-
-    desenhar_texto(
-        "Passe o mouse no '?' para fechar.",
-        fonte_pequena,
-        AMARELO_CLARO,
-        LARGURA // 2,
-        y + 210
-    )
-
-
-def menu_principal():
-
-    largura_painel = int(LARGURA * 0.50)
-    altura_painel = int(ALTURA * 0.48)
-    painel_menu = pygame.Rect(
-        (LARGURA - largura_painel) // 2,
-        (ALTURA - altura_painel) // 2,
-        largura_painel,
-        altura_painel
-    )
-    botao_jogar = pygame.Rect(
-        (LARGURA - int(LARGURA * 0.38)) // 2,
-        int(ALTURA * 0.45),
-        int(LARGURA * 0.38),
-        int(ALTURA * 0.08)
-    )
-    botao_sair = pygame.Rect(
-        (LARGURA - int(LARGURA * 0.38)) // 2,
-        int(ALTURA * 0.56),
-        int(LARGURA * 0.38),
-        int(ALTURA * 0.08)
-    )
-    botao_ajuda = pygame.Rect(
-        LARGURA - 90,
-        ALTURA - 90,
-        50,
-        50
-    )
-
-    while True:
-
-        mouse_pos = pygame.mouse.get_pos()
-
-        for evento in pygame.event.get():
-
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if evento.type == pygame.MOUSEBUTTONDOWN:
-
-                if evento.button == 1:
-
-                    if botao_jogar.collidepoint(mouse_pos):
-                        menu_jogar()
-
-                    if botao_sair.collidepoint(mouse_pos):
-                        pygame.quit()
-                        sys.exit()
-
-        tela.fill(FUNDO)
+        if destaque:
+            cor_fundo = AMARELO_CLARO if passou_mouse else AMARELO
+            cor_texto = PRETO
+            cor_borda = AMARELO_CLARO if passou_mouse else AMARELO
+        else:
+            cor_fundo = PAINEL_2 if not passou_mouse else PAINEL_3
+            cor_texto = BRANCO if not passou_mouse else BRANCO
+            cor_borda = BORDA_CLARA if passou_mouse else BORDA
 
         pygame.draw.rect(
-            tela,
-            FUNDO_2,
-            (0, 0, LARGURA, 10)
+            self.tela,
+            cor_fundo,
+            rect,
+            border_radius=12
         )
 
         pygame.draw.rect(
-            tela,
+            self.tela,
+            cor_borda,
+            rect,
+            width=2,
+            border_radius=12
+        )
+
+        self.desenhar_texto(
+            texto,
+            self.fonte_botao,
+            cor_texto,
+            rect.centerx,
+            rect.centery
+        )
+
+
+    def abrir_jogo(self,seed=''):
+        puzzle = zebra()
+        seed = str(seed)
+        if seed == 'random':
+            puzzle.geraChave()
+        elif len(seed) in (35,41):
+            puzzle.chave = str(seed)
+        self.telajogo.puzzle = puzzle
+        self.telajogo.executar_interface()
+        self.rodando=False
+        pygame.quit()
+        
+
+
+    def desenhar_ajuda(self):
+        largura = 540
+        altura = 260
+
+        x = (self.LARGURA - largura) // 2
+        y = (self.ALTURA - altura) // 2
+
+        sombra = pygame.Rect(x + 10, y + 10, largura, altura)
+        painel = pygame.Rect(x, y, largura, altura)
+
+        pygame.draw.rect(
+            self.tela,
+            PRETO,
+            sombra,
+            border_radius=16
+        )
+
+        pygame.draw.rect(
+            self.tela,
             PAINEL,
-            painel_menu,
+            painel,
             border_radius=16
         )
 
         pygame.draw.rect(
-            tela,
-            BORDA,
-            painel_menu,
+            self.tela,
+            BORDA_CLARA,
+            painel,
             width=2,
             border_radius=16
         )
 
-        desenhar_texto(
-            "PENSE COMIGO",
-            fonte_titulo,
+        self.desenhar_texto(
+            "COMO JOGAR",
+            self.fonte_botao,
             BRANCO,
-            LARGURA // 2,
-            int(ALTURA * 0.31)
+            self.LARGURA // 2,
+            y + 42
         )
 
-        desenhar_texto(
-            "DESAFIE SUA LÓGICA",
-            fonte_subtitulo,
-            CINZA,
-            LARGURA // 2,
-            int(ALTURA * 0.38)
+        for indice, linha in enumerate([
+            "Resolva o quebra-cabeça usando a lógica.",
+            "Use as pistas para descobrir a posição correta.",
+            "Acerte todas as posições para vencer."
+        ]):
+            self.desenhar_texto(
+                linha,
+                self.fonte_pequena,
+                CINZA,
+                self.LARGURA // 2,
+                y + 95 + indice * 30
+            )
+
+        self.desenhar_texto(
+            "Passe o mouse no '?' para fechar.",
+            self.fonte_pequena,
+            AMARELO_CLARO,
+            self.LARGURA // 2,
+            y + 210
         )
 
-        desenhar_botao(
-            botao_jogar,
-            "JOGAR",
-            mouse_pos,
-            destaque=True
+
+    def menu_principal(self):
+
+        largura_painel = int(self.LARGURA * 0.50)
+        altura_painel = int(self.ALTURA * 0.48)
+        painel_menu = pygame.Rect(
+            (self.LARGURA - largura_painel) // 2,
+            (self.ALTURA - altura_painel) // 2,
+            largura_painel,
+            altura_painel
         )
-
-        desenhar_botao(
-            botao_sair,
-            "SAIR",
-            mouse_pos
+        botao_jogar = pygame.Rect(
+            (self.LARGURA - int(self.LARGURA * 0.38)) // 2,
+            int(self.ALTURA * 0.45),
+            int(self.LARGURA * 0.38),
+            int(self.ALTURA * 0.08)
         )
-
-        mouse_na_ajuda = botao_ajuda.collidepoint(mouse_pos)
-
-        pygame.draw.rect(
-            tela,
-            PAINEL_2 if not mouse_na_ajuda else PAINEL_3,
-            botao_ajuda,
-            border_radius=12
+        botao_sair = pygame.Rect(
+            (self.LARGURA - int(self.LARGURA * 0.38)) // 2,
+            int(self.ALTURA * 0.56),
+            int(self.LARGURA * 0.38),
+            int(self.ALTURA * 0.08)
         )
-
-        pygame.draw.rect(
-            tela,
-            BORDA_CLARA if mouse_na_ajuda else BORDA,
-            botao_ajuda,
-            width=2,
-            border_radius=12
+        botao_ajuda = pygame.Rect(
+            self.LARGURA - 90,
+            self.ALTURA - 90,
+            50,
+            50
         )
+        self.rodando=True
+        while self.rodando:
 
-        desenhar_texto(
-            "?",
-            fonte_interrogacao,
-            BRANCO,
-            botao_ajuda.centerx,
-            botao_ajuda.centery
+            mouse_pos = pygame.mouse.get_pos()
+
+            self.tela.fill(FUNDO)
+
+            pygame.draw.rect(
+                self.tela,
+                FUNDO_2,
+                (0, 0, self.LARGURA, 10)
+            )
+
+            pygame.draw.rect(
+                self.tela,
+                PAINEL,
+                painel_menu,
+                border_radius=16
+            )
+
+            pygame.draw.rect(
+                self.tela,
+                BORDA,
+                painel_menu,
+                width=2,
+                border_radius=16
+            )
+
+            self.desenhar_texto(
+                "PENSA COMIGO",
+                self.fonte_titulo,
+                BRANCO,
+                self.LARGURA // 2,
+                int(self.ALTURA * 0.31)
+            )
+
+            self.desenhar_texto(
+                "DESAFIE SUA LÓGICA",
+                self.fonte_subtitulo,
+                CINZA,
+                self.LARGURA // 2,
+                int(self.ALTURA * 0.38)
+            )
+
+            self.desenhar_botao(
+                botao_jogar,
+                "JOGAR",
+                mouse_pos,
+                destaque=True
+            )
+
+            self.desenhar_botao(
+                botao_sair,
+                "SAIR",
+                mouse_pos
+            )
+
+            mouse_na_ajuda = botao_ajuda.collidepoint(mouse_pos)
+
+            pygame.draw.rect(
+                self.tela,
+                PAINEL_2 if not mouse_na_ajuda else PAINEL_3,
+                botao_ajuda,
+                border_radius=12
+            )
+
+            pygame.draw.rect(
+                self.tela,
+                BORDA_CLARA if mouse_na_ajuda else BORDA,
+                botao_ajuda,
+                width=2,
+                border_radius=12
+            )
+
+            self.desenhar_texto(
+                "?",
+                self.fonte_interrogacao,
+                BRANCO,
+                botao_ajuda.centerx,
+                botao_ajuda.centery
+            )
+
+            if mouse_na_ajuda:
+                self.desenhar_ajuda()
+
+            pygame.display.flip()
+            self.clock.tick(60)
+            for evento in pygame.event.get():
+
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+
+                    if evento.button == 1:
+
+                        if botao_jogar.collidepoint(mouse_pos):
+                            self.menu_jogar()
+
+                        if botao_sair.collidepoint(mouse_pos):
+                            self.rodando = False
+                            pygame.quit()
+
+
+
+    def menu_jogar(self):
+
+        largura_painel = int(self.LARGURA * 0.56)
+        altura_painel = int(self.ALTURA * 0.66)
+        painel_menu = pygame.Rect(
+            (self.LARGURA - largura_painel) // 2,
+            (self.ALTURA - altura_painel) // 2,
+            largura_painel,
+            altura_painel
         )
+        botao_classico = pygame.Rect(
+            (self.LARGURA - int(self.LARGURA * 0.40)) // 2,
+            int(self.ALTURA * 0.28),
+            int(self.LARGURA * 0.40),
+            int(self.ALTURA * 0.08)
+        )
+        botao_aleatorio = pygame.Rect(
+            (self.LARGURA - int(self.LARGURA * 0.40)) // 2,
+            int(self.ALTURA * 0.39),
+            int(self.LARGURA * 0.40),
+            int(self.ALTURA * 0.08)
+        )
+        botao_seed = pygame.Rect(
+            (self.LARGURA - int(self.LARGURA * 0.40)) // 2,
+            int(self.ALTURA * 0.50),
+            int(self.LARGURA * 0.40),
+            int(self.ALTURA * 0.08)
+        )
+        botao_voltar = pygame.Rect(
+            (self.LARGURA - int(self.LARGURA * 0.40)) // 2,
+            int(self.ALTURA * 0.61),
+            int(self.LARGURA * 0.40),
+            int(self.ALTURA * 0.08)
+        )
+        self.rodando = True
+        while self.rodando:
+            self.tela.fill(FUNDO)
+            mouse_pos = pygame.mouse.get_pos()
+            pygame.draw.rect(
+                self.tela,
+                FUNDO_2,
+                (0, 0, self.LARGURA, 10)
+            )
 
-        if mouse_na_ajuda:
-            desenhar_ajuda()
+            pygame.draw.rect(
+                self.tela,
+                PAINEL,
+                painel_menu,
+                border_radius=16
+            )
 
-        pygame.display.flip()
-        clock.tick(60)
+            pygame.draw.rect(
+                self.tela,
+                BORDA,
+                painel_menu,
+                width=2,
+                border_radius=16
+            )
+
+            self.desenhar_texto(
+                "JOGAR",
+                self.fonte_titulo,
+                BRANCO,
+                self.LARGURA // 2,
+                int(self.ALTURA * 0.22)
+            )
+
+            self.desenhar_botao(
+                botao_classico,
+                "CLÁSSICO",
+                mouse_pos
+            )
+
+            self.desenhar_botao(
+                botao_aleatorio,
+                "ALEATÓRIO",
+                mouse_pos,
+                destaque=True
+            )
+
+            self.desenhar_botao(
+                botao_seed,
+                "INFORMAR SEED",
+                mouse_pos
+            )
+
+            self.desenhar_botao(
+                botao_voltar,
+                "VOLTAR",
+                mouse_pos
+            )
+
+            pygame.display.flip()
+            self.clock.tick(60)
 
 
-def menu_jogar():
+            for evento in pygame.event.get():
 
-    largura_painel = int(LARGURA * 0.56)
-    altura_painel = int(ALTURA * 0.66)
-    painel_menu = pygame.Rect(
-        (LARGURA - largura_painel) // 2,
-        (ALTURA - altura_painel) // 2,
-        largura_painel,
-        altura_painel
-    )
-    botao_classico = pygame.Rect(
-        (LARGURA - int(LARGURA * 0.40)) // 2,
-        int(ALTURA * 0.28),
-        int(LARGURA * 0.40),
-        int(ALTURA * 0.08)
-    )
-    botao_aleatorio = pygame.Rect(
-        (LARGURA - int(LARGURA * 0.40)) // 2,
-        int(ALTURA * 0.39),
-        int(LARGURA * 0.40),
-        int(ALTURA * 0.08)
-    )
-    botao_seed = pygame.Rect(
-        (LARGURA - int(LARGURA * 0.40)) // 2,
-        int(ALTURA * 0.50),
-        int(LARGURA * 0.40),
-        int(ALTURA * 0.08)
-    )
-    botao_voltar = pygame.Rect(
-        (LARGURA - int(LARGURA * 0.40)) // 2,
-        int(ALTURA * 0.61),
-        int(LARGURA * 0.40),
-        int(ALTURA * 0.08)
-    )
+                if evento.type == pygame.QUIT:
+                    self.rodando = False
 
-    while True:
+                elif evento.type == pygame.MOUSEBUTTONDOWN:
 
-        mouse_pos = pygame.mouse.get_pos()
+                    if evento.button == 1:
 
-        for evento in pygame.event.get():
+                        if botao_aleatorio.collidepoint(mouse_pos):
+                            seed = 'random'
+                            self.abrir_jogo(seed)
+                        elif botao_classico.collidepoint(mouse_pos)                        :
+                            self.abrir_jogo()
+                        elif botao_seed.collidepoint(mouse_pos):
+                            self.menu_seed()
 
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
 
-            if evento.type == pygame.MOUSEBUTTONDOWN:
+                        elif botao_voltar.collidepoint(mouse_pos):
+                            return
+                        continue
 
-                if evento.button == 1:
+                elif evento.type == pygame.KEYDOWN:
 
-                    if botao_aleatorio.collidepoint(mouse_pos):
-                        seed = random.randint(100000, 999999)
-                        abrir_jogo(seed)
+                    if evento.key == pygame.K_ESCAPE:
 
-                    if botao_seed.collidepoint(mouse_pos):
-                        menu_seed()
-
-                    if botao_voltar.collidepoint(mouse_pos):
                         return
 
-        tela.fill(FUNDO)
 
-        pygame.draw.rect(
-            tela,
-            FUNDO_2,
-            (0, 0, LARGURA, 10)
+
+
+    def menu_seed(self):
+
+        seed_texto = ""
+        largura_painel = int(self.LARGURA * 0.60)
+        altura_painel = int(self.ALTURA * 0.55)
+        painel_menu = pygame.Rect(
+            (self.LARGURA - largura_painel) // 2,
+            (self.ALTURA - altura_painel) // 2,
+            largura_painel,
+            altura_painel
+        )
+        botao_confirmar = pygame.Rect(
+            int(self.LARGURA * 0.31),
+            int(self.ALTURA * 0.58),
+            int(self.LARGURA * 0.17),
+            int(self.ALTURA * 0.08)
+        )
+        botao_voltar = pygame.Rect(
+            int(self.LARGURA * 0.52),
+            int(self.ALTURA * 0.58),
+            int(self.LARGURA * 0.17),
+            int(self.ALTURA * 0.08)
+        )
+        campo_seed = pygame.Rect(
+            (self.LARGURA - int(self.LARGURA * 0.40)) // 2,
+            int(self.ALTURA * 0.44),
+            int(self.LARGURA * 0.40),
+            int(self.ALTURA * 0.08)
         )
 
-        pygame.draw.rect(
-            tela,
-            PAINEL,
-            painel_menu,
-            border_radius=16
-        )
+        pygame.key.start_text_input()
+        self.rodando = True
+        self.invalida = False
+        while self.rodando:
+            mouse_pos = pygame.mouse.get_pos()
+            self.tela.fill(FUNDO)
+            pygame.draw.rect(
+                self.tela,
+                FUNDO_2,
+                (0, 0, self.LARGURA, 10)
+            )
 
-        pygame.draw.rect(
-            tela,
-            BORDA,
-            painel_menu,
-            width=2,
-            border_radius=16
-        )
+            pygame.draw.rect(
+                self.tela,
+                PAINEL,
+                painel_menu,
+                border_radius=16
+            )
 
-        desenhar_texto(
-            "JOGAR",
-            fonte_titulo,
-            BRANCO,
-            LARGURA // 2,
-            int(ALTURA * 0.22)
-        )
+            pygame.draw.rect(
+                self.tela,
+                BORDA,
+                painel_menu,
+                width=2,
+                border_radius=16
+            )
 
-        desenhar_botao(
-            botao_classico,
-            "CLÁSSICO",
-            mouse_pos
-        )
+            self.desenhar_texto(
+                "INFORMAR SEED",
+                self.fonte_titulo,
+                BRANCO,
+                self.LARGURA // 2,
+                int(self.ALTURA * 0.22)
+            )
 
-        desenhar_botao(
-            botao_aleatorio,
-            "ALEATÓRIO",
-            mouse_pos,
-            destaque=True
-        )
+            self.desenhar_texto(
+                "Digite uma seed numérica:",
+                self.fonte_pequena,
+                CINZA,
+                self.LARGURA // 2,
+                int(self.ALTURA * 0.34)
+            )
 
-        desenhar_botao(
-            botao_seed,
-            "INFORMAR SEED",
-            mouse_pos
-        )
+            pygame.draw.rect(
+                self.tela,
+                PAINEL_2,
+                campo_seed,
+                border_radius=10
+            )
 
-        desenhar_botao(
-            botao_voltar,
-            "VOLTAR",
-            mouse_pos
-        )
+            pygame.draw.rect(
+                self.tela,
+                AMARELO if seed_texto else BORDA,
+                campo_seed,
+                width=2,
+                border_radius=10
+            )
 
-        pygame.display.flip()
-        clock.tick(60)
+            texto_mostrado = seed_texto if seed_texto else "Digite a seed..."
+            cor_texto = BRANCO if seed_texto else CINZA_ESCURO
+
+            self.desenhar_texto(
+                texto_mostrado,
+                self.fonte_seed,
+                cor_texto,
+                campo_seed.centerx,
+                campo_seed.centery
+            )
+
+            self.desenhar_botao(
+                botao_confirmar,
+                "CONFIRMAR",
+                mouse_pos,
+                destaque=True
+            )
+
+            self.desenhar_botao(
+                botao_voltar,
+                "VOLTAR",
+                mouse_pos
+            )
+            if self.invalida:
+                    self.desenhar_texto(
+                    "CHAVE INVALIDA OU INCOMPLETA",
+                    FONTE_PEQUENA,
+                    VERMELHO,
+                    self.LARGURA // 2,
+                    self.ALTURA - 90,
+                    True
+                )
+            pygame.display.flip()
+            self.clock.tick(60)
 
 
-def menu_seed():
+            for evento in pygame.event.get():
 
-    seed_texto = ""
-    largura_painel = int(LARGURA * 0.60)
-    altura_painel = int(ALTURA * 0.55)
-    painel_menu = pygame.Rect(
-        (LARGURA - largura_painel) // 2,
-        (ALTURA - altura_painel) // 2,
-        largura_painel,
-        altura_painel
-    )
-    botao_confirmar = pygame.Rect(
-        int(LARGURA * 0.31),
-        int(ALTURA * 0.58),
-        int(LARGURA * 0.17),
-        int(ALTURA * 0.08)
-    )
-    botao_voltar = pygame.Rect(
-        int(LARGURA * 0.52),
-        int(ALTURA * 0.58),
-        int(LARGURA * 0.17),
-        int(ALTURA * 0.08)
-    )
-    campo_seed = pygame.Rect(
-        (LARGURA - int(LARGURA * 0.40)) // 2,
-        int(ALTURA * 0.44),
-        int(LARGURA * 0.40),
-        int(ALTURA * 0.08)
-    )
-
-    pygame.key.start_text_input()
-
-    while True:
-
-        mouse_pos = pygame.mouse.get_pos()
-
-        for evento in pygame.event.get():
-
-            if evento.type == pygame.QUIT:
-                pygame.key.stop_text_input()
-                pygame.quit()
-                sys.exit()
-
-            if evento.type == pygame.TEXTINPUT:
-                somente_numeros = ""
-
-                for caractere in evento.text:
-                    if caractere.isdigit():
-                        somente_numeros += caractere
-
-                if len(seed_texto) + len(somente_numeros) <= 9:
-                    seed_texto += somente_numeros
-
-            if evento.type == pygame.KEYDOWN:
-
-                if evento.key == pygame.K_BACKSPACE:
-                    seed_texto = seed_texto[:-1]
-
-                elif evento.key == pygame.K_RETURN:
-                    if seed_texto:
-                        pygame.key.stop_text_input()
-                        seed = int(seed_texto)
-                        abrir_jogo(seed)
-
-                elif evento.key == pygame.K_ESCAPE:
+                if evento.type == pygame.QUIT:
                     pygame.key.stop_text_input()
-                    return
+                    pygame.quit()
 
-            if evento.type == pygame.MOUSEBUTTONDOWN:
+                if evento.type == pygame.TEXTINPUT:
+                    somente_numeros = ""
 
-                if evento.button == 1:
+                    for caractere in evento.text:
+                        if caractere.isdigit() or caractere == ":":
+                            somente_numeros += caractere
 
-                    if botao_confirmar.collidepoint(mouse_pos):
-                        if seed_texto:
+                    if (len(seed_texto) + len(somente_numeros) <= 35 and ":" not in seed_texto) or (len(seed_texto) + len(somente_numeros) <= 42 and ":" in seed_texto):
+                        seed_texto += somente_numeros
+
+                if evento.type == pygame.KEYDOWN:
+
+                    if evento.key == pygame.K_BACKSPACE:
+                        seed_texto = seed_texto[:-1]
+
+                    elif evento.key == pygame.K_DELETE:
+                        seed_texto = ''
+
+                    elif evento.key == pygame.K_RETURN:
+                        if seed_texto and len(seed_texto) in (35,41):
                             pygame.key.stop_text_input()
                             seed = int(seed_texto)
-                            abrir_jogo(seed)
+                            self.abrir_jogo(seed)
+                        else:
+                            self.invalida = True
 
-                    if botao_voltar.collidepoint(mouse_pos):
+                    elif evento.key == pygame.K_ESCAPE:
                         pygame.key.stop_text_input()
+                        self.invalida = False
                         return
 
-        tela.fill(FUNDO)
+                if evento.type == pygame.MOUSEBUTTONDOWN:
 
-        pygame.draw.rect(
-            tela,
-            FUNDO_2,
-            (0, 0, LARGURA, 10)
-        )
+                    if evento.button == 1:
 
-        pygame.draw.rect(
-            tela,
-            PAINEL,
-            painel_menu,
-            border_radius=16
-        )
+                        if botao_confirmar.collidepoint(mouse_pos):
+                            if seed_texto and len(seed_texto) in (35,41):
+                                pygame.key.stop_text_input()
+                                seed = int(seed_texto)
+                                self.abrir_jogo(seed)
+                            else:
+                                self.invalida = True
 
-        pygame.draw.rect(
-            tela,
-            BORDA,
-            painel_menu,
-            width=2,
-            border_radius=16
-        )
+                        if botao_voltar.collidepoint(mouse_pos):
+                            pygame.key.stop_text_input()
+                            self.invalida = False
+                            return
 
-        desenhar_texto(
-            "INFORMAR SEED",
-            fonte_titulo,
-            BRANCO,
-            LARGURA // 2,
-            int(ALTURA * 0.22)
-        )
+ 
 
-        desenhar_texto(
-            "Digite uma seed numérica:",
-            fonte_pequena,
-            CINZA,
-            LARGURA // 2,
-            int(ALTURA * 0.34)
-        )
 
-        pygame.draw.rect(
-            tela,
-            PAINEL_2,
-            campo_seed,
-            border_radius=10
-        )
 
-        pygame.draw.rect(
-            tela,
-            AMARELO if seed_texto else BORDA,
-            campo_seed,
-            width=2,
-            border_radius=10
-        )
+if __name__ == "__main__":
 
-        texto_mostrado = seed_texto if seed_texto else "Digite a seed..."
-        cor_texto = BRANCO if seed_texto else CINZA_ESCURO
-
-        desenhar_texto(
-            texto_mostrado,
-            fonte_seed,
-            cor_texto,
-            campo_seed.centerx,
-            campo_seed.centery
-        )
-
-        desenhar_botao(
-            botao_confirmar,
-            "CONFIRMAR",
-            mouse_pos,
-            destaque=True
-        )
-
-        desenhar_botao(
-            botao_voltar,
-            "VOLTAR",
-            mouse_pos
-        )
-
-        pygame.display.flip()
-        clock.tick(60)
-
-menu_principal()
+    menuInicial().menu_principal()

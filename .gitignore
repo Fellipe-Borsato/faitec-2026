@@ -10,3 +10,4 @@ __pycache__/
 # Pygame / projeto
 *.log
 particularTeste.py
+python.py
