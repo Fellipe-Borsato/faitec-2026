@@ -110,35 +110,31 @@ def desenhar_investigacao(
             6
         )
 
-        texto(
-            janela,
+        render_categoria = FONTE_MUITO_PEQUENA.render(
             categoria.upper(),
-            FONTE_MUITO_PEQUENA,
-            AMARELO
-            if selecionada
-            else BRANCO,
-            rect.x + 12,
-            rect.centery,
-            False
+            True,
+            AMARELO if selecionada else BRANCO
         )
+        rect_categoria = render_categoria.get_rect(
+            midleft=(rect.x + 12, rect.centery)
+        )
+        janela.blit(render_categoria, rect_categoria)
 
         valor_atual = tabela_jogador[
             casa_selecionada
         ][i]
 
-        texto(
-            janela,
-            "?"
-            if valor_atual is None
-            else valor_atual,
-            FONTE_MUITO_PEQUENA,
-            CINZA_ESCURO
-            if valor_atual is None
-            else BRANCO,
-            rect.right - 40,
-            rect.centery,
-            True
+        valor_texto = "?" if valor_atual is None else valor_atual
+        cor_valor = CINZA_ESCURO if valor_atual is None else BRANCO
+        render_valor = FONTE_MUITO_PEQUENA.render(
+            str(valor_texto),
+            True,
+            cor_valor
         )
+        rect_valor = render_valor.get_rect(
+            center=(rect.right - 70, rect.centery)
+        )
+        janela.blit(render_valor, rect_valor)
 
     categoria_nome = categorias[
         categoria_selecionada
@@ -271,39 +267,40 @@ def desenhar_investigacao(
             border_radius=6
         )
 
-        texto(
-            janela,
-            valor,
-            FONTE_MUITO_PEQUENA,
-            cor_texto,
-            rect.x + 12,
-            rect.centery,
-            False
+        render_valor = FONTE_MUITO_PEQUENA.render(
+            str(valor),
+            True,
+            cor_texto
         )
+        rect_valor = render_valor.get_rect(
+            midleft=(rect.x + 12, rect.centery)
+        )
+        janela.blit(render_valor, rect_valor)
 
         if selecionado:
 
-            texto(
-                janela,
+            render_status = FONTE_MUITO_PEQUENA.render(
                 "ATIVO",
-                FONTE_MUITO_PEQUENA,
-                AMARELO,
-                rect.right - 32,
-                rect.centery,
-                True
+                True,
+                AMARELO
             )
+            rect_status = render_status.get_rect(
+                center=(rect.right - 32, rect.centery)
+            )
+            janela.blit(render_status, rect_status)
 
         elif ocupado:
 
-            texto(
-                janela,
-                f"CASA {casa_com_valor}",
-                FONTE_MUITO_PEQUENA,
-                CINZA_ESCURO,
-                rect.right - 35,
-                rect.centery,
-                True
+            texto_status = f"CASA {casa_com_valor}"
+            render_status = FONTE_MUITO_PEQUENA.render(
+                texto_status,
+                True,
+                CINZA_ESCURO
             )
+            rect_status = render_status.get_rect(
+                center=(rect.right - 35, rect.centery)
+            )
+            janela.blit(render_status, rect_status)
 
 
 def obter_rect_categorias(
