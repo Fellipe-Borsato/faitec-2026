@@ -8,8 +8,9 @@ from interface.mainInterface import (
 
 def main():
 
-    puzzle = zebra()
-    puzzle.geraChave()
+    puzzle = zebra('64189479859314279538168975386147791')
+    #puzzle.geraChave()
+    """
     print(puzzle.chaveFormatada())
     dicas = puzzle.geraDicas()
     respostas = puzzle.pegaResposta()
@@ -23,7 +24,7 @@ def main():
     print(respostas)
 
     categorias = puzzle.buscaCategorias(mostraValores=True,mostraTodas=False)
-    #impressora = thermal()
+    impressora = thermal()
     impressora = False
     if impressora:
         impressora.fonte(True)
@@ -43,7 +44,7 @@ def main():
         print()
         print(puzzle.chaveFormatada())
         print()
-
+"""
     tela = ui(puzzle)
     tela.executar_interface()
 

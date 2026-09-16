@@ -70,6 +70,19 @@ def desenhar_rodape(
         mouse_pos,
         True
     )
+    
+    botao(
+        janela,
+        pygame.Rect(
+            largura - 270*2,
+            y + 9,
+            245,
+            42
+        ),
+        "IMPRIMIR DICAS",
+        mouse_pos,
+        True
+    )
 
 
 def obter_rect_verificar(
@@ -80,6 +93,19 @@ def obter_rect_verificar(
 
     return pygame.Rect(
         largura - 270,
+        altura - rodape + 9,
+        245,
+        42
+    )
+    
+def obter_rect_imprimir(
+    largura,
+    altura,
+    rodape
+):
+
+    return pygame.Rect(
+        largura - 270*2,
         altura - rodape + 9,
         245,
         42
