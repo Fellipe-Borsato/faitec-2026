@@ -182,6 +182,7 @@ class menuInicial():
         )
 
 
+
     def menu_principal(self):
 
         largura_painel = int(self.LARGURA * 0.50)

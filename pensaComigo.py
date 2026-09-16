@@ -18,6 +18,7 @@ def start():
         respostas[resposta] = listasol
     print(respostas)
 
+    
     categorias = puzzle.buscaCategorias(mostraValores=True,mostraTodas=False)
     impressora = thermal()
     impressora = False
