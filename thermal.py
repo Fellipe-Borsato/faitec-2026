@@ -13,9 +13,13 @@ class thermal:
         if self.device is None:
             return
             raise Exception("Printer not found!") #Dá erro se não encontrar impressora
-        self.device.set_configuration() #Inicializa a funcionalidade USB
+        try:
+            self.device.get_active_configuration() #Caso ja esteja inicalizada
+        except usb.core.USBError:
+            self.device.set_configuration() #Inicializa a funcionalidade USB
         self.device.write(0x01, b"\x1b\x40") #Inicializa / reseta a impressora (P.19 do manual)
         self.device.write(0x01, b"\x1b\x74\x03") #Seleciona a língua de impressao (Pra aparecer ã, é, etc) (P.27 do manual, consta na documentação)
+
     def __bool__(self):
         return self.device is not None
     
@@ -144,10 +148,15 @@ class thermal:
 
     def cut(self):
         self.print_text("\n\n\n\n\n") #Poe quebra de linha no final pra poder rasgar o papel
-  
-    def __del__(self): #Quando a classe for fechada, libera a impressora
-        try:
-            if self.device is not None:
+    def close(self):
+        if self.device is not None:
+            try:
                 usb.util.dispose_resources(self.device)
-        except:
-            pass
+            except Exception as e:
+                print(f"Error releasing printer: {e}")
+            finally:
+                self.device = None
+
+    def __del__(self):
+        self.close()
+

@@ -3,7 +3,7 @@ from thermal import thermal
 from interface.ui.interface import (
     desenhar_interface
 )
-
+import pensaComigo
 from interface.ui.dicas.dicas import (
     obter_botoes_paginacao,
     obter_total_paginas_dicas,
@@ -37,14 +37,10 @@ from interface.ui.dimensoes import (
     criar_dimensoes
 )
 
+from menupensaComigo import menuInicial
 class ui():
-    def __init__(self,puzzle):
+    def __init__(self,puzzle=''):
         self.puzzle=puzzle
-        self.categorias = self.puzzle.buscaCategorias()
-        self.tabela_jogador = [
-        [None for _ in self.categorias]
-        for _ in range(5)
-        ]
         self.mensagem_jogo = ""
         self.cor_mensagem = CINZA
         self.impressora = thermal()
@@ -56,7 +52,6 @@ class ui():
     ):
         self.mensagem_jogo = mensagem
         self.cor_mensagem = cor
-        self.impressora = thermal()
 
     def obter_mensagem(self):
         return self.mensagem_jogo, self.cor_mensagem
@@ -111,12 +106,16 @@ class ui():
 
         self.tabela_jogador[casa][categoria] = valor
         self.mostrar_mensagem(
-            f"{valor} → CASA {casa + 1}",
+            f"{valor} -> CASA {casa + 1}",
             VERDE
         )
 
     def executar_interface(self):
         self.categorias = self.puzzle.buscaCategorias()
+        self.tabela_jogador = [
+        [None for _ in self.categorias]
+        for _ in range(5)
+        ]
         self.dicas = self.puzzle.geraDicas()
         self.respostas = self.puzzle.pegaResposta()
         for resposta in range(len(self.respostas)):
@@ -177,7 +176,7 @@ class ui():
         pagina_dicas = 0
 
         rodando = True
-
+        impressora = thermal()
         while rodando:
 
             mouse_pos = pygame.mouse.get_pos()
@@ -188,6 +187,7 @@ class ui():
                 if evento.type == pygame.QUIT:
 
                     rodando = False
+
 
 
                 elif evento.type == pygame.KEYDOWN:
@@ -422,19 +422,22 @@ class ui():
                         evento.pos
                     ):
                         tempdicas = self.puzzle.geraDicas(True)
-                        if self.impressora:
-                            self.impressora.fonte(True)
+                        if impressora:
+                            
+                            impressora.fonte(True)
+                            impressora.print_text("|".join(self.categorias))
                             for dica in tempdicas:
-                                self.impressora.print_text(dica)
-                            self.impressora.print_text()
-                            self.impressora.center(True)
-                            self.impressora.print_text(self.puzzle.chaveFormatada())
+                                impressora.print_text(dica)
+                            impressora.print_text()
+                            impressora.center(True)
+                            impressora.print_text(self.puzzle.chaveFormatada())
                             for n in range(0, 35, 5):
-                                self.impressora.print_barcode(self.puzzle.chave[n:n+5])
+                                impressora.print_barcode(self.puzzle.chave[n:n+5])
                             #impressora.print_barcode(puzzle.chave)
-                            self.impressora.cut()
+                            impressora.cut()
                             pass
                         else:
+                            print("|".join(self.categorias))
                             for dica in tempdicas:
                                 print(dica)
                             print()
@@ -471,5 +474,6 @@ class ui():
             )
 
             clock.tick(60)
-
+        impressora.close()
+        menuInicial().menu_principal()
         pygame.quit()

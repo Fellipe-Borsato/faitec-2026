@@ -1,16 +1,11 @@
 from zebra import zebra
 from thermal import thermal
+from menupensaComigo import menuInicial
 
-from interface.mainInterface import (
-    ui
-)
-
-
-def main():
-
+def start():
+    """
     puzzle = zebra('64189479859314279538168975386147791')
     #puzzle.geraChave()
-    """
     print(puzzle.chaveFormatada())
     dicas = puzzle.geraDicas()
     respostas = puzzle.pegaResposta()
@@ -23,6 +18,7 @@ def main():
         respostas[resposta] = listasol
     print(respostas)
 
+    
     categorias = puzzle.buscaCategorias(mostraValores=True,mostraTodas=False)
     impressora = thermal()
     impressora = False
@@ -45,10 +41,10 @@ def main():
         print(puzzle.chaveFormatada())
         print()
 """
-    tela = ui(puzzle)
-    tela.executar_interface()
+    menuInicial().menu_principal()
+
 
 
 if __name__ == "__main__":
 
-    main()
+    start()
