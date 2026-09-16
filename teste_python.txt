@@ -1,2 +1,0 @@
-Python está funcionando corretamente!
-Arquivo criado pelo teste do VS Code.
