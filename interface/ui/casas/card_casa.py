@@ -127,9 +127,9 @@ def desenhar_card_casa(
         )
 
         valor_rect = pygame.Rect(
-            rect.right - 95,
+            rect.right - 120,
             y - 4,
-            78,
+            110,
             21
         )
 
