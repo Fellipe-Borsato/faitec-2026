@@ -32,6 +32,7 @@ class menuInicial():
     def __init__(self):
         from interface.mainInterface import ui
         self.telajogo = ui()
+        self.ajuda=False
         self.rodando=False
         pygame.init()
         pdisplay = pygame.display
@@ -158,8 +159,8 @@ class menuInicial():
 
         for indice, linha in enumerate([
             "Resolva o quebra-cabeça usando a lógica.",
-            "Use as pistas para descobrir a posição correta.",
-            "Acerte todas as posições para vencer."
+            "Use as dicas para descobrir a posição correta.",
+            "Preencha todas as posições corretamente para vencer."
         ]):
             self.desenhar_texto(
                 linha,
@@ -168,9 +169,12 @@ class menuInicial():
                 self.LARGURA // 2,
                 y + 95 + indice * 30
             )
-
+        if self.ajuda:
+            msg = "Clique em "
+        else:
+            msg = "Mova o mouse para fora do "
         self.desenhar_texto(
-            "Passe o mouse no '?' para fechar.",
+            msg + "'?' para fechar.",
             self.fonte_pequena,
             AMARELO_CLARO,
             self.LARGURA // 2,
@@ -291,6 +295,8 @@ class menuInicial():
             if mouse_na_ajuda:
                 self.desenhar_ajuda()
 
+            if self.ajuda:
+                self.desenhar_ajuda()
             pygame.display.flip()
             self.clock.tick(60)
             for evento in pygame.event.get():
@@ -305,8 +311,10 @@ class menuInicial():
 
                         if botao_jogar.collidepoint(mouse_pos):
                             self.menu_jogar()
+                        elif botao_ajuda.collidepoint(mouse_pos):
+                            self.ajuda = not self.ajuda
 
-                        if botao_sair.collidepoint(mouse_pos):
+                        elif botao_sair.collidepoint(mouse_pos):
                             self.rodando = False
                             pygame.quit()
 

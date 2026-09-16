@@ -3,7 +3,7 @@ from thermal import thermal
 from interface.ui.interface import (
     desenhar_interface
 )
-import penseComigo
+import pensaComigo
 from interface.ui.dicas.dicas import (
     obter_botoes_paginacao,
     obter_total_paginas_dicas,
@@ -37,7 +37,7 @@ from interface.ui.dimensoes import (
     criar_dimensoes
 )
 
-from menupenseComigo import menuInicial
+from menupensaComigo import menuInicial
 class ui():
     def __init__(self,puzzle=''):
         self.puzzle=puzzle
