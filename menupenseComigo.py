@@ -106,15 +106,16 @@ def abrir_jogo(seed=None):
 
     pasta = os.path.dirname(os.path.abspath(__file__))
     arquivo_jogo = os.path.join(pasta, "penseComigo.py")
+    interpretador = sys.executable
 
     if seed is None:
         subprocess.Popen(
-            ["py", "-3.14", arquivo_jogo],
+            [interpretador, arquivo_jogo],
             cwd=pasta
         )
     else:
         subprocess.Popen(
-            ["py", "-3.14", arquivo_jogo, str(seed)],
+            [interpretador, arquivo_jogo, str(seed)],
             cwd=pasta
         )
 
