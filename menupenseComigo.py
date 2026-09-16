@@ -3,82 +3,52 @@ import sys
 import os
 import subprocess
 import random
-import importlib.util
 
-
-# ============================================================
-# CARREGAR CORES DO ARQUIVO EXISTENTE
-# ============================================================
-
-CAMINHO_CORES = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "interface",
-    "config",
-    "cores.py"
+from interface.config.cores import (
+    FUNDO,
+    FUNDO_2,
+    PAINEL,
+    PAINEL_2,
+    PAINEL_3,
+    BORDA,
+    BORDA_CLARA,
+    BRANCO,
+    CINZA,
+    CINZA_ESCURO,
+    AMARELO,
+    AMARELO_CLARO,
+    PRETO,
 )
 
-spec = importlib.util.spec_from_file_location("cores", CAMINHO_CORES)
-cores = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(cores)
+from interface.config.fontes import (
+    FONTE_TITULO,
+    FONTE_SUBTITULO,
+    FONTE_CATEGORIA,
+    FONTE_NORMAL,
+    FONTE_PEQUENA,
+)
 
 
-# ============================================================
-# CORES
-# ============================================================
-
-FUNDO = cores.FUNDO
-FUNDO_2 = cores.FUNDO_2
-
-PAINEL = cores.PAINEL
-PAINEL_2 = cores.PAINEL_2
-PAINEL_3 = cores.PAINEL_3
-
-BORDA = cores.BORDA
-BORDA_CLARA = cores.BORDA_CLARA
-
-BRANCO = cores.BRANCO
-CINZA = cores.CINZA
-CINZA_ESCURO = cores.CINZA_ESCURO
-
-AMARELO = cores.AMARELO
-AMARELO_CLARO = cores.AMARELO_CLARO
-
-VERDE = cores.VERDE
-VERMELHO = cores.VERMELHO
-
-PRETO = cores.PRETO
-
-
-# ============================================================
-# CONFIGURAÇÕES
-# ============================================================
 
 pygame.init()
 
-LARGURA = 1000
-ALTURA = 700
+info_tela = pygame.display.Info()
+LARGURA = info_tela.current_w
+ALTURA = info_tela.current_h
 
-tela = pygame.display.set_mode((LARGURA, ALTURA))
+tela = pygame.display.set_mode((LARGURA, ALTURA), pygame.FULLSCREEN)
 pygame.display.set_caption("PENSE COMIGO")
 
 clock = pygame.time.Clock()
 
 
-# ============================================================
-# FONTES
-# ============================================================
+fonte_titulo = FONTE_TITULO
+fonte_subtitulo = FONTE_SUBTITULO
+fonte_botao = FONTE_CATEGORIA
+fonte_pequena = FONTE_PEQUENA
+fonte_seed = FONTE_NORMAL
+fonte_interrogacao = FONTE_CATEGORIA
 
-fonte_titulo = pygame.font.SysFont("arial", 58, bold=True)
-fonte_subtitulo = pygame.font.SysFont("arial", 20)
-fonte_botao = pygame.font.SysFont("arial", 27, bold=True)
-fonte_pequena = pygame.font.SysFont("arial", 18)
-fonte_seed = pygame.font.SysFont("arial", 25)
-fonte_interrogacao = pygame.font.SysFont("arial", 24, bold=True)
-
-
-# ============================================================
-# FUNÇÕES
-# ============================================================
 
 def desenhar_texto(texto, fonte, cor, x, y, centralizado=True):
     superficie = fonte.render(texto, True, cor)
@@ -97,23 +67,25 @@ def desenhar_botao(rect, texto, mouse_pos, destaque=False):
     if destaque:
         cor_fundo = AMARELO_CLARO if passou_mouse else AMARELO
         cor_texto = PRETO
+        cor_borda = AMARELO_CLARO if passou_mouse else AMARELO
     else:
         cor_fundo = PAINEL_2 if not passou_mouse else PAINEL_3
-        cor_texto = BRANCO
+        cor_texto = BRANCO if not passou_mouse else BRANCO
+        cor_borda = BORDA_CLARA if passou_mouse else BORDA
 
     pygame.draw.rect(
         tela,
         cor_fundo,
         rect,
-        border_radius=10
+        border_radius=12
     )
 
     pygame.draw.rect(
         tela,
-        BORDA_CLARA if passou_mouse else BORDA,
+        cor_borda,
         rect,
         width=2,
-        border_radius=10
+        border_radius=12
     )
 
     desenhar_texto(
@@ -150,33 +122,28 @@ def abrir_jogo(seed=None):
     sys.exit()
 
 
-# ============================================================
-# TELA DE AJUDA
-# ============================================================
-
 def desenhar_ajuda():
-    largura = 500
-    altura = 270
+    largura = 540
+    altura = 260
 
     x = (LARGURA - largura) // 2
     y = (ALTURA - altura) // 2
 
-    sombra = pygame.Rect(x + 8, y + 8, largura, altura)
+    sombra = pygame.Rect(x + 10, y + 10, largura, altura)
+    painel = pygame.Rect(x, y, largura, altura)
 
     pygame.draw.rect(
         tela,
         PRETO,
         sombra,
-        border_radius=14
+        border_radius=16
     )
-
-    painel = pygame.Rect(x, y, largura, altura)
 
     pygame.draw.rect(
         tela,
         PAINEL,
         painel,
-        border_radius=14
+        border_radius=16
     )
 
     pygame.draw.rect(
@@ -184,7 +151,7 @@ def desenhar_ajuda():
         BORDA_CLARA,
         painel,
         width=2,
-        border_radius=14
+        border_radius=16
     )
 
     desenhar_texto(
@@ -192,32 +159,21 @@ def desenhar_ajuda():
         fonte_botao,
         BRANCO,
         LARGURA // 2,
-        y + 40
+        y + 42
     )
 
-    desenhar_texto(
+    for indice, linha in enumerate([
         "Resolva o quebra-cabeça usando a lógica.",
-        fonte_pequena,
-        CINZA,
-        LARGURA // 2,
-        y + 95
-    )
-
-    desenhar_texto(
         "Use as pistas para descobrir a posição correta.",
-        fonte_pequena,
-        CINZA,
-        LARGURA // 2,
-        y + 125
-    )
-
-    desenhar_texto(
-        "Acerte todas as posições para vencer.",
-        fonte_pequena,
-        CINZA,
-        LARGURA // 2,
-        y + 155
-    )
+        "Acerte todas as posições para vencer."
+    ]):
+        desenhar_texto(
+            linha,
+            fonte_pequena,
+            CINZA,
+            LARGURA // 2,
+            y + 95 + indice * 30
+        )
 
     desenhar_texto(
         "Passe o mouse no '?' para fechar.",
@@ -228,22 +184,33 @@ def desenhar_ajuda():
     )
 
 
-# ============================================================
-# TELA PRINCIPAL
-# ============================================================
-
 def menu_principal():
 
+    largura_painel = int(LARGURA * 0.50)
+    altura_painel = int(ALTURA * 0.48)
+    painel_menu = pygame.Rect(
+        (LARGURA - largura_painel) // 2,
+        (ALTURA - altura_painel) // 2,
+        largura_painel,
+        altura_painel
+    )
     botao_jogar = pygame.Rect(
-        350, 290, 300, 65
+        (LARGURA - int(LARGURA * 0.38)) // 2,
+        int(ALTURA * 0.45),
+        int(LARGURA * 0.38),
+        int(ALTURA * 0.08)
     )
-
     botao_sair = pygame.Rect(
-        350, 380, 300, 65
+        (LARGURA - int(LARGURA * 0.38)) // 2,
+        int(ALTURA * 0.56),
+        int(LARGURA * 0.38),
+        int(ALTURA * 0.08)
     )
-
     botao_ajuda = pygame.Rect(
-        930, 630, 45, 45
+        LARGURA - 90,
+        ALTURA - 90,
+        50,
+        50
     )
 
     while True:
@@ -267,29 +234,35 @@ def menu_principal():
                         pygame.quit()
                         sys.exit()
 
-        # ----------------------------------------------------
-        # FUNDO
-        # ----------------------------------------------------
-
         tela.fill(FUNDO)
 
-        # detalhe superior
         pygame.draw.rect(
             tela,
             FUNDO_2,
-            (0, 0, LARGURA, 8)
+            (0, 0, LARGURA, 10)
         )
 
-        # ----------------------------------------------------
-        # TÍTULO
-        # ----------------------------------------------------
+        pygame.draw.rect(
+            tela,
+            PAINEL,
+            painel_menu,
+            border_radius=16
+        )
+
+        pygame.draw.rect(
+            tela,
+            BORDA,
+            painel_menu,
+            width=2,
+            border_radius=16
+        )
 
         desenhar_texto(
             "PENSE COMIGO",
             fonte_titulo,
             BRANCO,
             LARGURA // 2,
-            150
+            int(ALTURA * 0.31)
         )
 
         desenhar_texto(
@@ -297,12 +270,8 @@ def menu_principal():
             fonte_subtitulo,
             CINZA,
             LARGURA // 2,
-            205
+            int(ALTURA * 0.38)
         )
-
-        # ----------------------------------------------------
-        # BOTÕES
-        # ----------------------------------------------------
 
         desenhar_botao(
             botao_jogar,
@@ -317,17 +286,13 @@ def menu_principal():
             mouse_pos
         )
 
-        # ----------------------------------------------------
-        # BOTÃO ?
-        # ----------------------------------------------------
-
         mouse_na_ajuda = botao_ajuda.collidepoint(mouse_pos)
 
         pygame.draw.rect(
             tela,
             PAINEL_2 if not mouse_na_ajuda else PAINEL_3,
             botao_ajuda,
-            border_radius=10
+            border_radius=12
         )
 
         pygame.draw.rect(
@@ -335,7 +300,7 @@ def menu_principal():
             BORDA_CLARA if mouse_na_ajuda else BORDA,
             botao_ajuda,
             width=2,
-            border_radius=10
+            border_radius=12
         )
 
         desenhar_texto(
@@ -346,10 +311,6 @@ def menu_principal():
             botao_ajuda.centery
         )
 
-        # ----------------------------------------------------
-        # AJUDA AO PASSAR O MOUSE
-        # ----------------------------------------------------
-
         if mouse_na_ajuda:
             desenhar_ajuda()
 
@@ -357,26 +318,39 @@ def menu_principal():
         clock.tick(60)
 
 
-# ============================================================
-# MENU JOGAR
-# ============================================================
-
 def menu_jogar():
 
+    largura_painel = int(LARGURA * 0.56)
+    altura_painel = int(ALTURA * 0.66)
+    painel_menu = pygame.Rect(
+        (LARGURA - largura_painel) // 2,
+        (ALTURA - altura_painel) // 2,
+        largura_painel,
+        altura_painel
+    )
     botao_classico = pygame.Rect(
-        300, 200, 400, 60
+        (LARGURA - int(LARGURA * 0.40)) // 2,
+        int(ALTURA * 0.28),
+        int(LARGURA * 0.40),
+        int(ALTURA * 0.08)
     )
-
     botao_aleatorio = pygame.Rect(
-        300, 285, 400, 60
+        (LARGURA - int(LARGURA * 0.40)) // 2,
+        int(ALTURA * 0.39),
+        int(LARGURA * 0.40),
+        int(ALTURA * 0.08)
     )
-
     botao_seed = pygame.Rect(
-        300, 370, 400, 60
+        (LARGURA - int(LARGURA * 0.40)) // 2,
+        int(ALTURA * 0.50),
+        int(LARGURA * 0.40),
+        int(ALTURA * 0.08)
     )
-
     botao_voltar = pygame.Rect(
-        300, 500, 400, 60
+        (LARGURA - int(LARGURA * 0.40)) // 2,
+        int(ALTURA * 0.61),
+        int(LARGURA * 0.40),
+        int(ALTURA * 0.08)
     )
 
     while True:
@@ -394,27 +368,44 @@ def menu_jogar():
                 if evento.button == 1:
 
                     if botao_aleatorio.collidepoint(mouse_pos):
-
                         seed = random.randint(100000, 999999)
-
                         abrir_jogo(seed)
 
                     if botao_seed.collidepoint(mouse_pos):
-
                         menu_seed()
 
                     if botao_voltar.collidepoint(mouse_pos):
-
                         return
 
         tela.fill(FUNDO)
+
+        pygame.draw.rect(
+            tela,
+            FUNDO_2,
+            (0, 0, LARGURA, 10)
+        )
+
+        pygame.draw.rect(
+            tela,
+            PAINEL,
+            painel_menu,
+            border_radius=16
+        )
+
+        pygame.draw.rect(
+            tela,
+            BORDA,
+            painel_menu,
+            width=2,
+            border_radius=16
+        )
 
         desenhar_texto(
             "JOGAR",
             fonte_titulo,
             BRANCO,
             LARGURA // 2,
-            100
+            int(ALTURA * 0.22)
         )
 
         desenhar_botao(
@@ -446,24 +437,34 @@ def menu_jogar():
         clock.tick(60)
 
 
-# ============================================================
-# INFORMAR SEED
-# ============================================================
-
 def menu_seed():
 
     seed_texto = ""
-
+    largura_painel = int(LARGURA * 0.60)
+    altura_painel = int(ALTURA * 0.55)
+    painel_menu = pygame.Rect(
+        (LARGURA - largura_painel) // 2,
+        (ALTURA - altura_painel) // 2,
+        largura_painel,
+        altura_painel
+    )
     botao_confirmar = pygame.Rect(
-        300, 400, 190, 60
+        int(LARGURA * 0.31),
+        int(ALTURA * 0.58),
+        int(LARGURA * 0.17),
+        int(ALTURA * 0.08)
     )
-
     botao_voltar = pygame.Rect(
-        510, 400, 190, 60
+        int(LARGURA * 0.52),
+        int(ALTURA * 0.58),
+        int(LARGURA * 0.17),
+        int(ALTURA * 0.08)
     )
-
     campo_seed = pygame.Rect(
-        300, 300, 400, 60
+        (LARGURA - int(LARGURA * 0.40)) // 2,
+        int(ALTURA * 0.44),
+        int(LARGURA * 0.40),
+        int(ALTURA * 0.08)
     )
 
     pygame.key.start_text_input()
@@ -475,19 +476,14 @@ def menu_seed():
         for evento in pygame.event.get():
 
             if evento.type == pygame.QUIT:
-
                 pygame.key.stop_text_input()
-
                 pygame.quit()
                 sys.exit()
 
             if evento.type == pygame.TEXTINPUT:
-
-                # aceita somente números
                 somente_numeros = ""
 
                 for caractere in evento.text:
-
                     if caractere.isdigit():
                         somente_numeros += caractere
 
@@ -497,23 +493,16 @@ def menu_seed():
             if evento.type == pygame.KEYDOWN:
 
                 if evento.key == pygame.K_BACKSPACE:
-
                     seed_texto = seed_texto[:-1]
 
                 elif evento.key == pygame.K_RETURN:
-
                     if seed_texto:
-
                         pygame.key.stop_text_input()
-
                         seed = int(seed_texto)
-
                         abrir_jogo(seed)
 
                 elif evento.key == pygame.K_ESCAPE:
-
                     pygame.key.stop_text_input()
-
                     return
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
@@ -521,29 +510,44 @@ def menu_seed():
                 if evento.button == 1:
 
                     if botao_confirmar.collidepoint(mouse_pos):
-
                         if seed_texto:
-
                             pygame.key.stop_text_input()
-
                             seed = int(seed_texto)
-
                             abrir_jogo(seed)
 
                     if botao_voltar.collidepoint(mouse_pos):
-
                         pygame.key.stop_text_input()
-
                         return
 
         tela.fill(FUNDO)
+
+        pygame.draw.rect(
+            tela,
+            FUNDO_2,
+            (0, 0, LARGURA, 10)
+        )
+
+        pygame.draw.rect(
+            tela,
+            PAINEL,
+            painel_menu,
+            border_radius=16
+        )
+
+        pygame.draw.rect(
+            tela,
+            BORDA,
+            painel_menu,
+            width=2,
+            border_radius=16
+        )
 
         desenhar_texto(
             "INFORMAR SEED",
             fonte_titulo,
             BRANCO,
             LARGURA // 2,
-            120
+            int(ALTURA * 0.22)
         )
 
         desenhar_texto(
@@ -551,13 +555,12 @@ def menu_seed():
             fonte_pequena,
             CINZA,
             LARGURA // 2,
-            240
+            int(ALTURA * 0.34)
         )
 
-        # campo
         pygame.draw.rect(
             tela,
-            PAINEL,
+            PAINEL_2,
             campo_seed,
             border_radius=10
         )
@@ -570,11 +573,7 @@ def menu_seed():
             border_radius=10
         )
 
-        texto_mostrado = seed_texto
-
-        if not texto_mostrado:
-            texto_mostrado = "Digite a seed..."
-
+        texto_mostrado = seed_texto if seed_texto else "Digite a seed..."
         cor_texto = BRANCO if seed_texto else CINZA_ESCURO
 
         desenhar_texto(
@@ -600,10 +599,5 @@ def menu_seed():
 
         pygame.display.flip()
         clock.tick(60)
-
-
-# ============================================================
-# INICIAR
-# ============================================================
 
 menu_principal()
