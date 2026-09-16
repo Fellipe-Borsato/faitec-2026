@@ -400,7 +400,9 @@ class ui():
                     ):
                         tempdicas = self.puzzle.geraDicas(True)
                         if impressora:
+                            
                             impressora.fonte(True)
+                            impressora.print_text("|".join(self.categorias))
                             for dica in tempdicas:
                                 impressora.print_text(dica)
                             impressora.print_text()
@@ -412,6 +414,7 @@ class ui():
                             impressora.cut()
                             pass
                         else:
+                            print("|".join(self.categorias))
                             for dica in tempdicas:
                                 print(dica)
                             print()
