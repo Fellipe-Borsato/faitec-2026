@@ -1,4 +1,5 @@
 import pygame
+from pygame._sdl2 import Window
 import sys
 from zebra import zebra
 
@@ -212,8 +213,11 @@ class menuInicial():
             50
         )
         self.rodando=True
+        xx=0
         while self.rodando:
-
+            window = Window.from_display_module()
+            window.position = (0, 0)
+            xx+=1
             mouse_pos = pygame.mouse.get_pos()
 
             self.tela.fill(FUNDO)

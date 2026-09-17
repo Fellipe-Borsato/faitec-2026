@@ -120,7 +120,8 @@ class zebra:
         def corrigeGramatica(texto):
             texto = texto.upper()
             texto = texto.replace(' QUEM A ', ' A ')
-            texto = texto.replace(' É,O ',' O ')
+            texto = texto.replace(' QUEM É,O ',' QUEM É ')
+            texto = texto.replace('QUEM É,O ','O ')
             texto = texto.replace('É,O ','O ')
             texto = texto.replace(' QUEM O ', ' O ')
             texto = texto.replace(' DE O ',' DO ')
@@ -250,7 +251,11 @@ class zebra:
             ('EXTRA',(0,0),(5,5))
         ]
         regras.append(regradicas)
-        regradicas = regras[int(self.chave[-1])-1]
+        if int(self.chave[-1])-1 <= 2:
+            regradicas = regras[int(self.chave[-1])-1]
+        else:
+            regradicas = regras[0]
+            self.chave[-1] = '1'
         random.seed(self.chave[-5:-1])
         extras = []
         temp = []

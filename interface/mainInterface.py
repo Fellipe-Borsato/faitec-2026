@@ -1,5 +1,6 @@
 import pygame
 from thermal import thermal
+from pygame._sdl2 import Window
 from interface.ui.interface import (
     desenhar_interface
 )
@@ -178,7 +179,8 @@ class ui():
         rodando = True
         impressora = thermal()
         while rodando:
-
+            window = Window.from_display_module()
+            window.position = (0, 0)
             mouse_pos = pygame.mouse.get_pos()
 
             for evento in pygame.event.get():
