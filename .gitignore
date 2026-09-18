@@ -1,7 +1,7 @@
+# Coisas temporarias do Office
 PID/~$I_SI_ModelodeRelatóriodoPID_2o.Períodos_2026.doc
 ~$zebra.xlsx
-PID/~WRL0004.tmp
-
+*.tmp
 # Python
 __pycache__/
 *.py[cod]
@@ -11,3 +11,4 @@ __pycache__/
 *.log
 particularTeste.py
 python.py
+

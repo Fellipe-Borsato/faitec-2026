@@ -514,7 +514,7 @@ class menuInicial():
                 self.fonte_titulo,
                 BRANCO,
                 self.LARGURA // 2,
-                int(self.ALTURA * 0.22)
+                int(self.ALTURA * 0.28)
             )
 
             self.desenhar_texto(
@@ -586,7 +586,7 @@ class menuInicial():
                     somente_numeros = ""
 
                     for caractere in evento.text:
-                        if caractere.isdigit() or caractere == ":":
+                        if (caractere.isdigit() and caractere not in (0,"0")) or caractere == ":":
                             somente_numeros += caractere
 
                     if (len(seed_texto) + len(somente_numeros) <= 35 and ":" not in seed_texto) or (len(seed_texto) + len(somente_numeros) <= 42 and ":" in seed_texto):
