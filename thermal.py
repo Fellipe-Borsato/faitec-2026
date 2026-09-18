@@ -10,13 +10,12 @@ class thermal:
             idProduct=0x5011, #Id da impressora termica, conforme consta na documentação
             backend=self.backend
         )
+        
         if self.device is None:
             return
             raise Exception("Printer not found!") #Dá erro se não encontrar impressora
-        try:
-            self.device.get_active_configuration() #Caso ja esteja inicalizada
-        except usb.core.USBError:
-            self.device.set_configuration() #Inicializa a funcionalidade USB
+        self.device.write(0x01, b"\x1b\x40")
+        self.device.set_configuration() #Inicializa a funcionalidade USB
         self.device.write(0x01, b"\x1b\x40") #Inicializa / reseta a impressora (P.19 do manual)
         self.device.write(0x01, b"\x1b\x74\x03") #Seleciona a língua de impressao (Pra aparecer ã, é, etc) (P.27 do manual, consta na documentação)
 

@@ -44,7 +44,6 @@ class ui():
         self.puzzle=puzzle
         self.mensagem_jogo = ""
         self.cor_mensagem = CINZA
-        self.impressora = thermal()
         self.dicas_usadas = set()
         
     def mostrar_mensagem(self,
@@ -437,6 +436,7 @@ class ui():
                                 impressora.print_barcode(self.puzzle.chave[n:n+5])
                             #impressora.print_barcode(puzzle.chave)
                             impressora.cut()
+                            impressora.center(False)
                             pass
                         else:
                             print("|".join(self.categorias))

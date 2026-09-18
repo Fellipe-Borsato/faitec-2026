@@ -3,7 +3,6 @@ from pygame._sdl2 import Window
 import sys
 from zebra import zebra
 
-
 from interface.config.cores import (
     FUNDO,
     FUNDO_2,

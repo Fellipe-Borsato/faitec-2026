@@ -1,5 +1,4 @@
 from zebra import zebra
-from thermal import thermal
 from menupensaComigo import menuInicial
 
 def start():
