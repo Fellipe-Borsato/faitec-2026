@@ -122,11 +122,11 @@ class menuInicial():
         largura = 540
         altura = 260
 
-        x = (self.LARGURA - largura) // 2
-        y = (self.ALTURA - altura) // 2
+        x = (self.LARGURA - largura) -60
+        y = (self.ALTURA - altura) -110
 
         sombra = pygame.Rect(x + 10, y + 10, largura, altura)
-        painel = pygame.Rect(x, y, largura, altura)
+        painel = pygame.Rect(x, y, largura, altura) 
 
         pygame.draw.rect(
             self.tela,
@@ -154,7 +154,7 @@ class menuInicial():
             "COMO JOGAR",
             self.fonte_botao,
             BRANCO,
-            self.LARGURA // 2,
+            x + largura//2,
             y + 42
         )
 
@@ -167,7 +167,7 @@ class menuInicial():
                 linha,
                 self.fonte_pequena,
                 CINZA,
-                self.LARGURA // 2,
+                x+largura//2,
                 y + 95 + indice * 30
             )
         if self.ajuda:
@@ -178,7 +178,7 @@ class menuInicial():
             msg + "'?' para fechar.",
             self.fonte_pequena,
             AMARELO_CLARO,
-            self.LARGURA // 2,
+            x+largura//2,
             y + 210
         )
 
