@@ -202,30 +202,31 @@ class zebra:
         ]
         regras.append(regradicas)
         regradicas = [
-            ('POS',(0,0),(2,5)),
-            ('DIR',(2,5),(2,4)),
-            ('PONTA',(0,0),(2,1)),
-            ('POS',(0,0),(3,4)),
-            ('MESMAPOS',(2,4),(5,4)),
-            ('MESMAPOS',(2,4),(1,4)),
             ('ESQ+',(1,4),(5,5)),
-            ('LADO',(1,4),(2,3)),
-            ('DIR',(4,2),(1,1)),
-            ('LADO',(4,4),(5,5)),
-            ('MESMAPOS',(4,2),(5,2)),
-            ('MESMAPOS',(1,3),(5,3)),
+            ('MESMAPOS',(2,4),(1,4)),
+            ('POS',(0,0),(2,5)),
+            ('MESMAPOS',(2,4),(5,4)),
             ('ESQ+',(1,2),(5,3)),
-            ('DIR+',(4,5),(1,3)),
-            ('LADO',(1,3),(3,4)),
+            ('MESMAPOS',(4,2),(5,2)),
             ('LADO',(3,3),(4,4)),
+            ('DIR+',(4,5),(1,3)),
+            ('DIR',(4,2),(1,1)),
+            ('POS',(0,0),(4,3)),
             ('ESQ',(3,4),(3,5)),
+            ('LADO',(1,3),(3,4)),
+            ('LADO',(4,4),(5,5)),
             ('ESQ+',(3,2),(3,5)),
+            ('MESMAPOS',(1,3),(5,3)),
+            ('DIR',(2,5),(2,4)),
+            ('LADO',(1,4),(2,3)),
+            ('PONTA',(0,0),(2,1)),
             ('DIR',(3,2),(3,1)),
-            ('EXTRA',(0,0),(1,5)),
+            ('EXTRA',(0,0),(5,1)),
             ('EXTRA',(0,0),(2,2)),
             ('EXTRA',(0,0),(4,1)),
-            ('EXTRA',(0,0),(4,3)),
-            ('EXTRA',(0,0),(5,1))
+            ('EXTRA',(0,0),(1,5))
+
+
         ]
         regras.append(regradicas)
         regradicas = [
@@ -266,6 +267,7 @@ class zebra:
                 extras.append(dica)
         regradicas = temp
         random.shuffle(regradicas)
+        random.shuffle(extras)
         if geraExtra:
             regradicas += extras
         dicas = []
