@@ -26,9 +26,19 @@ from interface.ui.rodape.rodape import (
 )
 
 from interface.config.cores import (
+    FUNDO,
+    FUNDO_2,
+    PAINEL,
+    PAINEL_2,
+    PAINEL_3,
+    BORDA,
+    BORDA_CLARA,
+    BRANCO,
     CINZA,
+    CINZA_ESCURO,
     AMARELO,
-    VERDE,
+    AMARELO_CLARO,
+    PRETO,
     VERMELHO
 )
 
@@ -45,6 +55,8 @@ class ui():
         self.mensagem_jogo = ""
         self.cor_mensagem = CINZA
         self.dicas_usadas = set()
+        self.completo = False
+        self.rodando = True
         
     def mostrar_mensagem(self,
         mensagem,
@@ -110,6 +122,8 @@ class ui():
             VERDE
         )
 
+    
+
     def executar_interface(self):
         self.categorias = self.puzzle.buscaCategorias()
         self.tabela_jogador = [
@@ -174,29 +188,107 @@ class ui():
         categoria_selecionada = 0
         dica_selecionada = 0
         pagina_dicas = 0
+        def desenhar_texto(texto, fonte, cor, x, y, centralizado=True):
+            superficie = fonte.render(texto, True, cor)
 
-        rodando = True
+            if centralizado:
+                rect = superficie.get_rect(center=(x, y))
+            else:
+                rect = superficie.get_rect(topleft=(x, y))
+
+            self.tela.blit(superficie, rect)
+
+
+        def desenhar_botao(rect, texto, mouse_pos, destaque=False):
+            passou_mouse = rect.collidepoint(mouse_pos)
+
+            if destaque:
+                cor_fundo = AMARELO_CLARO if passou_mouse else AMARELO
+                cor_texto = PRETO
+                cor_borda = AMARELO_CLARO if passou_mouse else AMARELO
+            else:
+                cor_fundo = PAINEL_2 if not passou_mouse else PAINEL_3
+                cor_texto = BRANCO if not passou_mouse else BRANCO
+                cor_borda = BORDA_CLARA if passou_mouse else BORDA
+
+            pygame.draw.rect(
+                janela,
+                cor_fundo,
+                rect,
+                border_radius=12
+            )
+
+            pygame.draw.rect(
+                janela,
+                cor_borda,
+                rect,
+                width=2,
+                border_radius=12
+            )
+
+            desenhar_texto(
+                texto,
+                self.fonte_botao,
+                cor_texto,
+                rect.centerx,
+                rect.centery
+            )
+        def ranking():
+            pdisplay = pygame.display
+            pdisplay.set_mode(display=0)
+            info = pdisplay.Info()
+            LARGURA = info.current_w
+            ALTURA = info.current_h
+            largura_painel = int(LARGURA * 0.60)
+            altura_painel = int(ALTURA * 0.55)
+            painel_menu = pygame.Rect(
+                (LARGURA - largura_painel) // 2,
+                (ALTURA - altura_painel) // 2,
+                largura_painel,
+                altura_painel
+            )
+            botao_confirmar = pygame.Rect(
+                int(LARGURA * 0.31),
+                int(ALTURA * 0.58),
+                int(LARGURA * 0.17),
+                int(ALTURA * 0.08)
+            )
+            botao_voltar = pygame.Rect(
+                int(LARGURA * 0.52),
+                int(ALTURA * 0.58),
+                int(LARGURA * 0.17),
+                int(ALTURA * 0.08)
+            )
+            campo_seed = pygame.Rect(
+                (LARGURA - int(LARGURA * 0.40)) // 2,
+                int(ALTURA * 0.44),
+                int(LARGURA * 0.40),
+                int(ALTURA * 0.08)
+            )
+            pygame.key.start_text_input()
+
         impressora = thermal()
-        while rodando:
+        while self.rodando:
             window = Window.from_display_module()
             window.position = (0, 0)
             mouse_pos = pygame.mouse.get_pos()
 
             for evento in pygame.event.get():
 
-
                 if evento.type == pygame.QUIT:
-
-                    rodando = False
-
-
+                    pygame.key.stop_text_input()
+                    self.rodando = False
+                    
+                elif evento.type == pygame.TEXTINPUT:
+                    nome_vencedor = ""
+                    for caractere in evento.text:
+                        nome_vencedor += caractere
 
                 elif evento.type == pygame.KEYDOWN:
 
                     if evento.key == pygame.K_ESCAPE:
 
-                        rodando = False
-
+                        self.rodando = False
 
                 elif evento.type == pygame.MOUSEWHEEL:
 
@@ -288,7 +380,7 @@ class ui():
                         evento.pos
                     ):
 
-                        rodando = False
+                        self.rodando = False
 
                         continue
 
@@ -407,11 +499,13 @@ class ui():
                                 "SOLUÇÃO CORRETA",
                                 VERDE
                             )
+                            self.completo = True
                         else:
                             self.mostrar_mensagem(
                                 "SOLUÇÃO INCORRETA",
                                 VERMELHO
                             )
+                            self.completo = False
                         
                     rect_imprimir = obter_rect_imprimir(
                         largura,
@@ -474,7 +568,77 @@ class ui():
                 cor_mensagem,
                 self.dicas_usadas
             )
+            if self.completo:
+                mouse_pos = pygame.mouse.get_pos()
+                pygame.draw.rect(
+                    janela,
+                    PAINEL,
+                    painel_menu,
+                    border_radius=16
+                )
 
+                pygame.draw.rect(
+                    janela,
+                    BORDA,
+                    painel_menu,
+                    width=2,
+                    border_radius=16
+                )
+
+                desenhar_texto(
+                    "INFORMAR SEED",
+                    self.fonte_titulo,
+                    BRANCO,
+                    self.LARGURA // 2,
+                    int(self.ALTURA * 0.28)
+                )
+
+                desenhar_texto(
+                    "Digite uma seed numérica:",
+                    self.fonte_pequena,
+                    CINZA,
+                    self.LARGURA // 2,
+                    int(self.ALTURA * 0.34)
+                )
+
+                pygame.draw.rect(
+                    janela,
+                    PAINEL_2,
+                    campo_seed,
+                    border_radius=10
+                )
+
+                pygame.draw.rect(
+                    janela,
+                    AMARELO if seed_texto else BORDA,
+                    campo_seed,
+                    width=2,
+                    border_radius=10
+                )
+
+                texto_mostrado = seed_texto if seed_texto else "Digite seu nome"
+                cor_texto = BRANCO if seed_texto else CINZA_ESCURO
+
+                desenhar_texto(
+                    texto_mostrado,
+                    self.fonte_seed,
+                    cor_texto,
+                    campo_seed.centerx,
+                    campo_seed.centery
+                )
+
+                desenhar_botao(
+                    botao_confirmar,
+                    "CONFIRMAR",
+                    mouse_pos,
+                    destaque=True
+                )
+
+                desenhar_botao(
+                    botao_voltar,
+                    "VOLTAR",
+                    mouse_pos
+                )
             clock.tick(60)
         impressora.close()
         menuInicial().menu_principal()
