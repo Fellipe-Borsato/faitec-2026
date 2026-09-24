@@ -8,6 +8,7 @@ class zebra:
        os.path.dirname(os.path.abspath(__file__)),
     'Categorias'
 )
+        self.rank = os.path.join(os.path.dirname(os.path.abspath(__file__)),"Ranking.txt")
         self.chave=str(chave.replace(":",""))
         if len(str(self.chave)) != 35:
             raise Exception ("Chave inválida")
@@ -274,3 +275,6 @@ class zebra:
         for regra in regradicas:
             dicas.append(self.geraDica(regra[0],regra[1],regra[2]))
         return dicas
+    def gravaRank(self,nome):
+        with open(self.rank, 'a', encoding='utf-8') as ranking:
+            ranking.write(f"{nome},{self.chaveFormatada()}\n")

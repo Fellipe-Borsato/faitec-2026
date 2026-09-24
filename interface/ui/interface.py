@@ -121,4 +121,4 @@ def desenhar_interface(
         cor_mensagem
     )
 
-    pygame.display.flip()
+    #pygame.display.flip()
