@@ -356,7 +356,7 @@ class ui():
                 "VOLTAR",
                 mouse_pos
             )
-        impressora = thermal()
+        impressora = False
         while self.rodando:
             window = Window.from_display_module()
             window.position = (0, 0)
@@ -643,6 +643,9 @@ class ui():
                             evento.pos
                         ):
                             tempdicas = self.puzzle.geraDicas(True)
+                            if not impressora:
+                                impressora = thermal()
+
                             if impressora:
                                 
                                 impressora.fonte(True)
@@ -657,6 +660,7 @@ class ui():
                                 #impressora.print_barcode(puzzle.chave)
                                 impressora.cut()
                                 impressora.center(False)
+                                impressora.close()
                                 pass
                             else:
                                 print("|".join(self.categorias))
