@@ -29,21 +29,22 @@ from interface.config.fontes import (
 )
 
 class menuInicial():
-    def __init__(self):
+    def __init__(self,monitor=0):
         from interface.mainInterface import ui
         self.telajogo = ui()
         self.ajuda=False
         self.rodando=False
         pygame.init()
+        self.monitor = monitor
         pdisplay = pygame.display
-        pdisplay.set_mode(display=0)
+        pdisplay.set_mode(display=self.monitor)
         info = pdisplay.Info()
 
         self.LARGURA = info.current_w
         self.ALTURA = info.current_h
         self.tela = pdisplay.set_mode(
                 (self.LARGURA, self.ALTURA),
-                pygame.NOFRAME
+                pygame.NOFRAME,display=self.monitor
             )
         pygame.display.set_caption("PENSA COMIGO")
         self.clock = pygame.time.Clock()
@@ -55,6 +56,26 @@ class menuInicial():
         self.fonte_seed = FONTE_NORMAL
         self.fonte_interrogacao = FONTE_CATEGORIA
 
+    def mudaMonitor(self):
+        tamanhos = pygame.display.get_desktop_sizes()
+        self.totalmonitores = len(tamanhos)
+
+        if self.monitor + 1 >= self.totalmonitores:
+            self.monitor = 0
+        else:
+            self.monitor += 1
+
+        self.LARGURA, self.ALTURA = tamanhos[self.monitor]
+
+
+        pygame.display.quit()
+        pygame.display.init()
+        self.tela = pygame.display.set_mode(
+            (self.LARGURA, self.ALTURA),
+            pygame.NOFRAME,
+            display=self.monitor
+        )
+        self.telajogo.monitor = self.monitor
 
     def desenhar_texto(self,texto, fonte, cor, x, y, centralizado=True):
         superficie = fonte.render(texto, True, cor)
@@ -215,7 +236,7 @@ class menuInicial():
         xx=0
         while self.rodando:
             window = Window.from_display_module()
-            window.position = (0, 0)
+            #window.position = (0, 0)
             xx+=1
             mouse_pos = pygame.mouse.get_pos()
 
@@ -321,7 +342,9 @@ class menuInicial():
                         elif botao_sair.collidepoint(mouse_pos):
                             self.rodando = False
                             pygame.quit()
-
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_F6:
+                        self.mudaMonitor()
 
 
     def menu_jogar(self):
@@ -447,6 +470,8 @@ class menuInicial():
                     if evento.key == pygame.K_ESCAPE:
 
                         return
+                    elif evento.key == pygame.K_F6:
+                        self.mudaMonitor()
 
 
 
@@ -598,7 +623,8 @@ class menuInicial():
 
                     elif evento.key == pygame.K_DELETE:
                         seed_texto = ''
-
+                    elif evento.key == pygame.K_F6:
+                        self.mudaMonitor()
                     elif evento.key == pygame.K_RETURN:
                         if seed_texto and len(seed_texto) in (35,41):
                             pygame.key.stop_text_input()

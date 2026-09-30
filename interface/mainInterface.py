@@ -59,7 +59,8 @@ from interface.config.fontes import (
 
 from menupensaComigo import menuInicial
 class ui():
-    def __init__(self,puzzle=''):
+    def __init__(self,puzzle='',monitor=0):
+        self.monitor = monitor
         self.puzzle=puzzle
         self.mensagem_jogo = ""
         self.cor_mensagem = CINZA
@@ -142,7 +143,26 @@ class ui():
             VERDE
         )
 
-    
+    def mudaMonitor(self):
+        tamanhos = pygame.display.get_desktop_sizes()
+        self.totalmonitores = len(tamanhos)
+
+        if self.monitor + 1 >= self.totalmonitores:
+            self.monitor = 0
+        else:
+            self.monitor += 1
+
+        self.LARGURA, self.ALTURA = tamanhos[self.monitor]
+
+
+        pygame.display.quit()
+        pygame.display.init()
+        self.janela = pygame.display.set_mode(
+            (self.LARGURA, self.ALTURA),
+            pygame.NOFRAME,
+            display=self.monitor
+        )
+
 
     def executar_interface(self):
         self.categorias = self.puzzle.buscaCategorias()
@@ -174,14 +194,14 @@ class ui():
 
         pygame.init()
         pdisplay = pygame.display
-        pdisplay.set_mode(display=0)
+        pdisplay.set_mode(display=self.monitor)
         info = pdisplay.Info()
         self.info = info
 
         largura = info.current_w
         altura = info.current_h
 
-        janela = pdisplay.set_mode(
+        self.janela = pdisplay.set_mode(
             (largura, altura),
             pygame.NOFRAME
             
@@ -217,7 +237,7 @@ class ui():
             else:
                 rect = superficie.get_rect(topleft=(x, y))
 
-            janela.blit(superficie, rect)
+            self.janela.blit(superficie, rect)
 
 
         def desenhar_botao(rect, texto, mouse_pos, destaque=False):
@@ -233,14 +253,14 @@ class ui():
                 cor_borda = BORDA_CLARA if passou_mouse else BORDA
 
             pygame.draw.rect(
-                janela,
+                self.janela,
                 cor_fundo,
                 rect,
                 border_radius=12
             )
 
             pygame.draw.rect(
-                janela,
+                self.janela,
                 cor_borda,
                 rect,
                 width=2,
@@ -288,14 +308,14 @@ class ui():
                 self.runonce = True
             mouse_pos = pygame.mouse.get_pos()
             pygame.draw.rect(
-                janela,
+                self.janela,
                 PAINEL,
                 self.painel_menu,
                 border_radius=16
             )
 
             pygame.draw.rect(
-                janela,
+                self.janela,
                 BORDA,
                 self.painel_menu,
                 width=2,
@@ -319,14 +339,14 @@ class ui():
             )
 
             pygame.draw.rect(
-                janela,
+                self.janela,
                 PAINEL_2,
                 self.campo_nome,
                 border_radius=10
             )
 
             pygame.draw.rect(
-                janela,
+                self.janela,
                 AMARELO if self.nome_vencedor else BORDA,
                 self.campo_nome,
                 width=2,
@@ -359,7 +379,7 @@ class ui():
         impressora = False
         while self.rodando:
             window = Window.from_display_module()
-            window.position = (0, 0)
+            #window.position = (0, 0)
             mouse_pos = pygame.mouse.get_pos()
             self.contador_backspace += 1
             if hashlib.sha256(self.trapaca.encode()).hexdigest() == self.segredo:
@@ -375,6 +395,32 @@ class ui():
                     self.contador_backspace = 0
             else:
                 self.contador_backspace = 0
+            mensagem_jogo, cor_mensagem = self.obter_mensagem()
+            desenhar_interface(
+                self.janela,
+                mouse_pos,
+                largura,
+                altura,
+                TOPO,
+                RODAPE,
+                painel_esquerdo,
+                painel_central,
+                painel_direito,
+                botao_minimizar,
+                botao_fechar,
+                self.dicas,
+                dica_selecionada,
+                pagina_dicas,
+                self.chave_formatada,
+                self.categorias,
+                self.tabela_jogador,
+                casa_selecionada,
+                self.dados_categorias,
+                categoria_selecionada,
+                mensagem_jogo,
+                cor_mensagem,
+                self.dicas_usadas
+            )
             for evento in pygame.event.get():
 
                 if evento.type == pygame.QUIT:
@@ -412,6 +458,8 @@ class ui():
                     else:
                         if evento.key == pygame.K_ESCAPE:
                             self.rodando = False
+                        if evento.key == pygame.K_F6:
+                            self.mudaMonitor()
                         if evento.key == pygame.K_F5:
                             self.cheat = not self.cheat
                             if not self.cheat:
@@ -706,39 +754,16 @@ class ui():
                             self.completo=False
                             self.nome_vencedor=''
 
-            mensagem_jogo, cor_mensagem = self.obter_mensagem()
 
-            desenhar_interface(
-                janela,
-                mouse_pos,
-                largura,
-                altura,
-                TOPO,
-                RODAPE,
-                painel_esquerdo,
-                painel_central,
-                painel_direito,
-                botao_minimizar,
-                botao_fechar,
-                self.dicas,
-                dica_selecionada,
-                pagina_dicas,
-                self.chave_formatada,
-                self.categorias,
-                self.tabela_jogador,
-                casa_selecionada,
-                self.dados_categorias,
-                categoria_selecionada,
-                mensagem_jogo,
-                cor_mensagem,
-                self.dicas_usadas
-            )
+
+
             if self.completo:
                 pygame.key.start_text_input()
                 ranking()
             pygame.display.flip()
 
             clock.tick(60)
-        impressora.close()
-        menuInicial().menu_principal()
+        if impressora:
+            impressora.close()
+        menuInicial(monitor=self.monitor).menu_principal()
         pygame.quit()
